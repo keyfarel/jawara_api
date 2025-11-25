@@ -15,6 +15,9 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'phone',
+        'role',                 // Baru
+        'registration_status',  // Baru
     ];
 
     protected $hidden = [
@@ -30,7 +33,39 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
-    // -------- JWT Methods -------- //
+    // --- Relasi ---
+
+    // Pengganti UserProfile: Data Warga linked ke User ini
+    public function citizen()
+    {
+        return $this->hasOne(Citizen::class);
+    }
+
+    // User bisa mengirim banyak pesan aspirasi
+    public function messages()
+    {
+        return $this->hasMany(CitizenMessage::class);
+    }
+
+    // User (Admin) bisa membuat banyak pengumuman
+    public function announcements()
+    {
+        return $this->hasMany(Announcement::class);
+    }
+
+    // User mencatat banyak transaksi
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    // Log aktifitas user
+    public function activityLogs()
+    {
+        return $this->hasMany(ActivityLog::class);
+    }
+
+    // --- JWT Methods ---
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -38,6 +73,9 @@ class User extends Authenticatable implements JWTSubject
 
     public function getJWTCustomClaims()
     {
-        return [];
+        return [
+            'role' => $this->role,
+            'email' => $this->email
+        ];
     }
 }

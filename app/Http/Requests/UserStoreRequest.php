@@ -32,9 +32,7 @@ class UserStoreRequest extends FormRequest
             'password' => [
                 'required',
                 'string',
-                "min:8
-
-",
+                "min:8",
                 'max:20',
             ],
         ];

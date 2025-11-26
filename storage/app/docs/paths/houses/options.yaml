@@ -1,0 +1,18 @@
+get:
+  tags:
+    - Houses
+  summary: Get available house options
+  description: Mengambil daftar rumah yang statusnya 'empty' (kosong) untuk ditampilkan di dropdown form registrasi.
+  operationId: getHouseOptions
+  security: [] # Kosongkan array ini agar endpoint bisa diakses tanpa login (Public)
+  responses:
+    200:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../../responses/Houses/HouseOption.yaml'
+    500:
+      description: Internal Server Error

@@ -1,0 +1,29 @@
+type: object
+properties:
+  id:
+    type: integer
+    example: 1
+  name:
+    type: string
+    example: John Doe
+  email:
+    type: string
+    format: email
+    example: admin@example.com
+  phone:
+    type: string
+    example: "08123456789"
+  role:
+    type: string
+    enum: [admin, treasurer, resident]
+    example: resident
+  registration_status:
+    type: string
+    enum: [pending, verified, rejected]
+    example: verified
+  created_at:
+    type: string
+    example: "2024-04-12T10:20:30Z"
+  updated_at:
+    type: string
+    example: "2024-04-12T10:20:30Z"

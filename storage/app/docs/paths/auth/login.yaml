@@ -1,0 +1,61 @@
+post:
+  tags:
+    - Authentication
+  summary: Login (Generate Access Token & Refresh Token)
+  description: |
+    Mengautentikasi user menggunakan email dan password.
+    Response mengembalikan token dan data user lengkap (termasuk role, citizen profile, family, dan house).
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - email
+            - password
+          properties:
+            email:
+              type: string
+              format: email
+              example: admin@example.com
+            password:
+              type: string
+              example: password
+  responses:
+    200:
+      description: Login successful
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              message:
+                type: string
+                example: Login successful
+              data:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIs...
+                  refresh_token:
+                    type: string
+                    example: "2fa50dd3-7cb6-4eeb-9c00-304639a9e9e3"
+                  token_type:
+                    type: string
+                    example: bearer
+                  expires_in:
+                    type: integer
+                    example: 3600
+                  user:
+                    $ref: "../../schemas/user_full.yaml"
+
+    422:
+      $ref: "../../responses/Auth/validation.yaml"
+
+    401:
+      $ref: "../../responses/Auth/unauthorized.yaml"

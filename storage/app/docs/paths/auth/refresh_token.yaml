@@ -1,0 +1,48 @@
+post:
+  tags:
+    - Authentication
+  summary: Refresh JWT Token
+  description: Generate access token baru menggunakan refresh token valid.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - refresh_token
+          properties:
+            refresh_token:
+              type: string
+              format: uuid
+              example: "2fa50dd3-7cb6-4eeb-9c00-304639a9e9e3"
+  responses:
+    200:
+      description: Token refreshed successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              message:
+                type: string
+                example: Token refreshed successfully
+              data:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+                  token_type:
+                    type: string
+                    example: bearer
+                  expires_in:
+                    type: integer
+                    example: 3600
+
+    401:
+      $ref: "../../responses/Auth/unauthorized.yaml"

@@ -1,0 +1,96 @@
+type: object
+properties:
+  id:
+    type: integer
+    example: 1
+  name:
+    type: string
+    example: John Doe
+  email:
+    type: string
+    example: johndoe@example.com
+  phone:
+    type: string
+    example: "081234567890"
+  role:
+    type: string
+    example: resident
+  registration_status:
+    type: string
+    example: verified
+
+  # Relasi ke Data Warga (Citizen)
+  citizen:
+    type: object
+    nullable: true
+    properties:
+      id:
+        type: integer
+        example: 10
+      nik:
+        type: string
+        example: "3276012304980003"
+      gender:
+        type: string
+        example: male
+      id_card_photo:
+        type: string
+        example: "id_cards/abcdef.jpg"
+      birth_place:
+        type: string
+        example: "Jakarta"
+      birth_date:
+        type: string
+        format: date
+        example: "1990-01-01"
+      religion:
+        type: string
+        example: "Islam"
+      blood_type:
+        type: string
+        example: "O"
+      family_role:
+        type: string
+        example: "Kepala Keluarga"
+      status:
+        type: string
+        example: "permanent"
+
+      # Relasi ke Keluarga (Family)
+      family:
+        type: object
+        nullable: true
+        properties:
+          id:
+            type: integer
+            example: 5
+          kk_number:
+            type: string
+            example: "3201010000000001"
+          ownership_status:
+            type: string
+            example: "owner"
+          status:
+            type: string
+            example: "active"
+
+          # Relasi ke Rumah (House)
+          house:
+            type: object
+            nullable: true
+            properties:
+              id:
+                type: integer
+                example: 2
+              house_name:
+                type: string
+                example: "Blok A No. 12"
+              address:
+                type: string
+                example: "Jl. Mawar No. 12, Jakarta"
+              house_type:
+                type: string
+                example: "Type 36"
+              status:
+                type: string
+                example: "occupied"

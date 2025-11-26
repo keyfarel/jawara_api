@@ -1,0 +1,11 @@
+type: object
+properties:
+  id:
+    type: integer
+    format: int64
+    example: 101
+    description: Primary key rumah
+  house_name:
+    type: string
+    example: "Blok A No. 10"
+    description: Nama atau nomor rumah

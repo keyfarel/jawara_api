@@ -1,0 +1,38 @@
+openapi: 3.0.3
+info:
+  title: API Documentation
+  version: 1.0.0
+
+servers:
+  - url: https://unmoaning-lenora-photomechanically.ngrok-free.dev
+    description: Ngrok Tunnel Server (Default)
+  - url: http://127.0.0.1:8000
+    description: Local Development Server
+
+paths:
+  # include modular files
+  # Auth
+  /api/register:
+    $ref: "./paths/auth/register.yaml"
+  /api/login:
+    $ref: "./paths/auth/login.yaml"
+  /api/refresh-token:
+    $ref: "./paths/auth/refresh_token.yaml"
+  /api/logout:
+    $ref: "./paths/auth/logout.yaml"
+
+  # Houses
+  /api/houses/options:
+    $ref: "./paths/houses/options.yaml"
+components:
+  securitySchemes:
+    BearerToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      $ref: "./schemas/user.yaml"
+    User Full:
+      $ref: "./schemas/user_full.yaml"

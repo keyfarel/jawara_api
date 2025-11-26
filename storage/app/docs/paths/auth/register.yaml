@@ -1,0 +1,138 @@
+post:
+  tags:
+    - Authentication
+  summary: Register User (Warga Baru)
+  description: |
+    Mendaftarkan user baru, membuat data Citizen, Family (KK), dan House (jika belum ada).
+    Memerlukan upload foto KTP.
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          required:
+            - full_name
+            - email
+            - phone
+            - password
+            - password_confirmation
+            - nik
+            - gender
+            - id_card_photo
+            - kk_number
+            - ownership_status
+            - family_role
+          properties:
+            # --- Akun User ---
+            full_name:
+              type: string
+              example: "John Doe"
+            email:
+              type: string
+              format: email
+              example: johndoe@example.com
+            phone:
+              type: string
+              example: "081234567890"
+            password:
+              type: string
+              example: password123
+            password_confirmation:
+              type: string
+              example: password123
+
+            # --- Data Citizen ---
+            nik:
+              type: string
+              description: 16 digit NIK
+              example: "3276012304980003"
+            gender:
+              type: string
+              enum: [male, female]
+              example: male
+            id_card_photo:
+              type: string
+              format: binary
+              description: File gambar (jpg/png, max 2MB)
+            birth_place:
+              type: string
+              example: "Jakarta"
+            birth_date:
+              type: string
+              format: date
+              example: "1990-01-01"
+            religion:
+              type: string
+              example: "Islam"
+            blood_type:
+              type: string
+              enum: [A, B, AB, O]
+              example: "O"
+            family_role:
+              type: string
+              enum: ["Kepala Keluarga", "Istri", "Anak", "Famili Lain"]
+              example: "Kepala Keluarga"
+
+            # --- Data Keluarga (KK) ---
+            kk_number:
+              type: string
+              description: 16 digit No KK
+              example: "3276010000000001"
+            ownership_status:
+              type: string
+              enum: [owner, renter]
+              example: owner
+
+            # --- Data Rumah (Pilih SATU opsi: ID atau Detail Baru) ---
+            house_id:
+              type: integer
+              nullable: true
+              description: Isi jika ingin bergabung ke rumah yang sudah ada di sistem
+              example: null
+            house_name:
+              type: string
+              nullable: true
+              description: Wajib jika house_id kosong (misal: Blok A No 1)
+              example: "Blok A No. 12"
+            house_address:
+              type: string
+              nullable: true
+              description: Wajib jika house_id kosong
+              example: "Jl. Mawar No. 12, Jakarta"
+            house_type:
+              type: string
+              nullable: true
+              example: "Type 36"
+
+  responses:
+    201:
+      description: Register successful
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              message:
+                type: string
+                example: Registration successful. Please wait for admin verification.
+              data:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+                  token_type:
+                    type: string
+                    example: bearer
+                  expires_in:
+                    type: integer
+                  user:
+                    $ref: "../../schemas/user_full.yaml"
+
+    422:
+      $ref: "../../responses/Auth/validation.yaml"

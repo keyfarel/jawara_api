@@ -1,0 +1,24 @@
+post:
+  tags:
+    - Authentication
+  summary: Logout user
+  description: Menghapus semua refresh token user & meng-invalidate access token aktif.
+  security:
+    - BearerToken: []
+  responses:
+    200:
+      description: Logged out successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              message:
+                type: string
+                example: Logged out successfully
+
+    401:
+      $ref: "../../responses/Auth/unauthorized.yaml"

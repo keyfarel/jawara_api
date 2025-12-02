@@ -33,6 +33,17 @@ paths:
   # mutations
   /api/mutations:
     $ref: "./paths/mutations/collection.yaml"
+  # Announcements
+  /api/announcements:
+    $ref: "./paths/announcements/collection.yaml"
+  # Finance
+  /api/finance/incomes:
+    $ref: "./paths/finance/incomes.yaml"
+  /api/finance/expenses:
+    $ref: "./paths/finance/expenses.yaml"
+  /api/finance/report:
+    $ref: "./paths/finance/report.yaml"
+
   # Options
   /api/houses/options:
     $ref: "./paths/houses/options.yaml"
@@ -56,3 +67,9 @@ components:
       $ref: "./schemas/user_full.yaml"
     Mutation:
       $ref: "./schemas/mutation.yaml"
+    Announcement:
+      $ref: "./schemas/announcement.yaml"
+    TransactionItem:
+      $ref: "./schemas/transaction_item.yaml"
+    FinancialReport:
+        $ref: "./schemas/financial_report.yaml"

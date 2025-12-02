@@ -1,0 +1,42 @@
+get:
+  tags:
+    - Finance
+  summary: Get Financial Report
+  description: Mengambil rekap keuangan berdasarkan rentang tanggal. Mengembalikan total (meta) dan rincian (data).
+  operationId: getFinancialReport
+  security:
+    - BearerToken: []
+  parameters:
+    - name: start_date
+      in: query
+      description: Tanggal Awal (Format YYYY-MM-DD)
+      required: true
+      schema:
+        type: string
+        format: date
+        example: "2023-11-01"
+    - name: end_date
+      in: query
+      description: Tanggal Akhir (Format YYYY-MM-DD)
+      required: true
+      schema:
+        type: string
+        format: date
+        example: "2023-11-30"
+    - name: type
+      in: query
+      description: Filter jenis transaksi (all, income, expense)
+      required: false
+      schema:
+        type: string
+        enum: ["all", "income", "expense"]
+        default: "all"
+  responses:
+    200:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/financial_report.yaml'
+    422:
+      description: Validation Error

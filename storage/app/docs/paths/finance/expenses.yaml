@@ -1,0 +1,23 @@
+get:
+  tags:
+    - Finance
+  summary: Get Expenses
+  description: Mengambil daftar semua pengeluaran, diurutkan dari yang terbaru.
+  operationId: getExpenses
+  security:
+    - BearerToken: []
+  responses:
+    200:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              data:
+                type: array
+                items:
+                  $ref: '../../schemas/transaction_item.yaml'

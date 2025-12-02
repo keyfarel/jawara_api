@@ -45,6 +45,10 @@ Route::middleware('jwt.auth')->group(function () {
     // Route::resource('/houses', HouseController::class);
     Route::get('/houses', [HouseController::class, 'index']);
     Route::post('/houses', [HouseController::class, 'store']);
+
+    // Warga
+    Route::get('/citizens', [\App\Http\Controllers\Api\CitizensController::class, 'index']);
+    Route::post('/citizens', [\App\Http\Controllers\Api\CitizensController::class, 'store']);   
 });
 
 Route::fallback(function () {

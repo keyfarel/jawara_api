@@ -41,10 +41,14 @@ class HouseController extends Controller
      */
     public function store(Request $request): jsonResponse
     {
-        //
-        $validated = $request->validate();
-
-        // $validated['status'] = 'active';
+        $validated = $request->validate([
+            'house_name' => 'required|string',
+            'owner_name' => 'required|string',
+            'address' => 'required|string',
+            'house_type' => 'required',
+            'has_complete_facilities' => 'required|boolean',
+            'status' => 'nullable|string'
+        ]);
 
         $house = House::create($validated);
 
@@ -58,24 +62,38 @@ class HouseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
-    }
+    // public function show(string $id)
+    // {
+    //     //
+    //     $show = House::findOrFail($id);
+
+    //     if ($show) {
+    //         return response()->json([
+    //             'status'  => 'success',
+    //             'message' => 'House retrieved successfully',
+    //             'data'    => $show
+    //         ], 200);
+    //     } else {
+    //         return response()->json([
+    //             'status'  => 'error',
+    //             'message' => 'House not found'
+    //         ], 404);
+    //     }
+    // }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+    // public function update(Request $request, string $id)
+    // {
+    //     //
+    // }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        //
-    }
+    // public function destroy(string $id)
+    // {
+    //     //
+    // }
 }

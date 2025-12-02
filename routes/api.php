@@ -42,7 +42,9 @@ Route::middleware('jwt.auth')->group(function () {
     Route::get('/finance/report', [\App\Http\Controllers\Api\TransactionController::class, 'report']);
 
     // Rumah
-    Route::resource('/houses', HouseController::class);
+    // Route::resource('/houses', HouseController::class);
+    Route::get('/houses', [HouseController::class, 'index']);
+    Route::post('/houses', [HouseController::class, 'store']);
 });
 
 Route::fallback(function () {

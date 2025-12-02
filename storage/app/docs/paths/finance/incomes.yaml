@@ -1,0 +1,23 @@
+get:
+  tags:
+    - Finance
+  summary: Get Incomes
+  description: Mengambil daftar semua pemasukan, diurutkan dari yang terbaru.
+  operationId: getIncomes
+  security:
+    - BearerToken: []
+  responses:
+    200:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              data:
+                type: array
+                items:
+                  $ref: '../../schemas/transaction_item.yaml'

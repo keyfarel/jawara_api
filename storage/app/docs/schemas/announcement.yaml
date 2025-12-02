@@ -1,0 +1,30 @@
+type: object
+properties:
+  id:
+    type: integer
+    format: int64
+    example: 10
+  title:
+    type: string
+    example: "Pemadaman Listrik Bergilir"
+  content:
+    type: string
+    example: "Akan dilakukan pemadaman listrik dari jam 09:00 - 12:00."
+  sender_name:
+    type: string
+    example: "Pak RT 01"
+    description: Nama user pembuat pengumuman
+  created_at:
+    type: string
+    example: "2023-11-20 09:00"
+    description: Tanggal sudah diformat (Y-m-d H:i)
+  image_link:
+    type: string
+    nullable: true
+    example: "http://localhost:8000/storage/announcements/images/foto1.jpg"
+    description: Full URL ke file gambar
+  document_link:
+    type: string
+    nullable: true
+    example: "http://localhost:8000/storage/announcements/documents/surat.pdf"
+    description: Full URL ke file dokumen

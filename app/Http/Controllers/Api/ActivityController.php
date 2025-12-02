@@ -3,27 +3,29 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Activity\StoreActivityRequest; // <--- Import ini
 use App\Models\Activity;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ActivityController extends Controller
 {
     /**
-     * C.1 Semua Aktifitas (List)
+     * G.1 List Kegiatan
+     * Data: nama, tanggal, lokasi, status
+     * (Ditambah deskripsi & kategori agar lengkap untuk detail)
      */
     public function index(): JsonResponse
     {
-        // Mengambil data urut dari yang terbaru
-        // Kita gunakan select() agar payload ringan, sesuai request C.1
         $activities = Activity::orderBy('activity_date', 'desc')
             ->select([
                 'id',
                 'name',
                 'activity_date',
-                'description',
-                'status', // Opsional: biasanya status juga penting ditampilkan
-                'category' // Opsional: untuk filter icon di frontend
+                'location',         // <--- Baru (Sesuai G.1)
+                'status',
+                'category',         // Opsional tapi berguna
+                'person_in_charge', // Opsional
+                'description'       // Opsional
             ])
             ->get();
 
@@ -33,5 +35,24 @@ class ActivityController extends Controller
         ]);
     }
 
-    // Nanti kita tambahkan method store() disini jika ingin fitur Tambah Kegiatan
+    /**
+     * G.2 Tambah Kegiatan
+     * Data: nama, kategori, tanggal, lokasi, penanggung jawab, deskripsi
+     */
+    public function store(StoreActivityRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+
+        // Set default status jika tidak ada input status
+        // Misalnya: 'scheduled' (dijadwalkan) atau 'pending'
+        $validated['status'] = 'upcoming';
+
+        $activity = Activity::create($validated);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Activity created successfully',
+            'data'    => $activity
+        ], 201);
+    }
 }

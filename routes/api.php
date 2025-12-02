@@ -20,6 +20,10 @@ Route::middleware('jwt.auth')->group(function () {
     Route::post('/payment-channels', [PaymentChannelController::class, 'store']);
 
     Route::get('/activities', [ActivityController::class, 'index']);
+    Route::post('/activities', [\App\Http\Controllers\Api\ActivityController::class, 'store']);
+
+    Route::get('/announcements', [\App\Http\Controllers\Api\AnnouncementController::class, 'index']);
+    Route::post('/announcements', [\App\Http\Controllers\Api\AnnouncementController::class, 'store']);
 
     Route::get('/users', [UserController::class, 'index']);
     Route::post('/users', [UserController::class, 'store']);
@@ -29,6 +33,13 @@ Route::middleware('jwt.auth')->group(function () {
     Route::get('/mutations', [\App\Http\Controllers\Api\MutationController::class, 'index']);
     Route::post('/mutations', [\App\Http\Controllers\Api\MutationController::class, 'store']);
     Route::get('/families/options', [\App\Http\Controllers\Api\FamilyController::class, 'options']);
+
+    // KEUANGAN (TRANSAKSI)
+    Route::get('/finance/incomes', [\App\Http\Controllers\Api\TransactionController::class, 'incomes']);
+    Route::get('/finance/expenses', [\App\Http\Controllers\Api\TransactionController::class, 'expenses']);
+
+    // LAPORAN
+    Route::get('/finance/report', [\App\Http\Controllers\Api\TransactionController::class, 'report']);
 });
 
 Route::fallback(function () {

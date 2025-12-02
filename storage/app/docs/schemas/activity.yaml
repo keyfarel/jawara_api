@@ -11,12 +11,21 @@ properties:
     type: string
     format: date-time
     example: "2023-10-25 20:00:00"
+  location:
+    type: string
+    nullable: true
+    example: "Pos Kamling RT 05"
+  person_in_charge:
+    type: string
+    nullable: true
+    example: "Bapak Budi"
   description:
     type: string
-    example: "Jaga pos kamling RT 05"
+    nullable: true
+    example: "Jaga pos kamling dan pengecekan portal"
   status:
     type: string
-    example: "completed"
+    example: "scheduled"
   category:
     type: string
     example: "security"

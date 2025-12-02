@@ -21,3 +21,63 @@ get:
                 type: array
                 items:
                   $ref: '../../schemas/activity.yaml'
+
+post:
+  tags:
+    - Activities
+  summary: Create Activity
+  description: Menambahkan kegiatan baru. Status otomatis di-set 'scheduled'.
+  operationId: createActivity
+  security:
+    - BearerToken: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - name
+            - category
+            - activity_date
+            - location
+            - person_in_charge
+          properties:
+            name:
+              type: string
+              example: "Kerja Bakti"
+            category:
+              type: string
+              enum: ["security", "social", "religious", "health"]
+              example: "social"
+            activity_date:
+              type: string
+              format: date-time
+              example: "2023-11-10 08:00:00"
+            location:
+              type: string
+              example: "Lapangan Balai Warga"
+            person_in_charge:
+              type: string
+              example: "Pak RT"
+            description:
+              type: string
+              example: "Membersihkan selokan dan potong rumput"
+  responses:
+    201:
+      description: Activity created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              message:
+                type: string
+                example: Activity created successfully
+              data:
+                $ref: '../../schemas/activity.yaml'
+    422:
+      description: Validation Error

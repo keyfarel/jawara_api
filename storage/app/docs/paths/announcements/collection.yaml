@@ -1,0 +1,74 @@
+get:
+  tags:
+    - Announcements
+  summary: List Broadcast Announcements
+  description: Mengambil daftar pengumuman/broadcast. Data sudah diformat (tanggal, nama pengirim, link gambar/dokumen).
+  operationId: getAnnouncements
+  security:
+    - BearerToken: []
+  responses:
+    200:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              data:
+                type: array
+                items:
+                  $ref: '../../schemas/announcement.yaml'
+
+post:
+  tags:
+    - Announcements
+  summary: Create Broadcast Announcement
+  description: Membuat pengumuman baru. Mendukung upload gambar dan dokumen (PDF).
+  operationId: createAnnouncement
+  security:
+    - BearerToken: []
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          required:
+            - title
+            - content
+          properties:
+            title:
+              type: string
+              example: "Kerja Bakti Minggu Ini"
+            content:
+              type: string
+              example: "Diharapkan membawa peralatan kebersihan masing-masing."
+            image:
+              type: string
+              format: binary
+              description: File gambar (jpg, png, jpeg). Opsional.
+            document:
+              type: string
+              format: binary
+              description: File dokumen (pdf, doc, docx). Opsional.
+  responses:
+    201:
+      description: Announcement created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              message:
+                type: string
+                example: Announcement broadcasted successfully
+              data:
+                $ref: '../../schemas/announcement.yaml'
+    422:
+      description: Validation Error

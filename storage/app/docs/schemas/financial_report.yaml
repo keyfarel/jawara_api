@@ -1,0 +1,45 @@
+type: object
+properties:
+  status:
+    type: string
+    example: success
+  meta:
+    type: object
+    description: Ringkasan total keuangan dalam periode tersebut
+    properties:
+      period:
+        type: string
+        example: "2023-11-01 s/d 2023-11-30"
+      total_income:
+        type: integer
+        example: 5000000
+      total_expense:
+        type: integer
+        example: 2000000
+      net_balance:
+        type: integer
+        example: 3000000
+        description: Sisa Saldo (Income - Expense)
+  data:
+    type: array
+    description: Rincian transaksi dalam periode tersebut
+    items:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+          example: "2023-11-05 10:00:00"
+        type:
+          type: string
+          enum: ["income", "expense"]
+          example: "income"
+        category:
+          type: string
+          example: "Iuran Wajib"
+        title:
+          type: string
+          example: "Iuran Bapak Budi"
+        amount:
+          type: integer
+          example: 50000

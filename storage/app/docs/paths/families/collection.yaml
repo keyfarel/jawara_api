@@ -1,0 +1,13 @@
+get:
+  summary: Get list of all families including house and citizens relation
+  tags:
+    - Families
+  responses:
+    '200':
+      description: List of family records
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../../schemas/family_full.yaml"

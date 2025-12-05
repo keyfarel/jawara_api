@@ -1,0 +1,11 @@
+type: object
+properties:
+  id:
+    type: integer
+  house:
+    type: object
+    nullable: true
+  citizens:
+    type: array
+    items:
+      $ref: "./citizen_short.yaml"

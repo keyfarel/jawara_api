@@ -52,6 +52,10 @@ paths:
   /api/houses:
     $ref: "./paths/houses/collection.yaml"
 
+  #families
+  /api/families:
+    $ref: "./paths/families/collection.yaml"
+
   # Options
   /api/houses/options:
     $ref: "./paths/houses/options.yaml"
@@ -89,3 +93,5 @@ components:
       $ref: "./schemas/citizen_create.yaml"
     House:
       $ref: "./schemas/house.yaml"
+    FamilyFull:
+      $ref: "./schemas/family_full.yaml"

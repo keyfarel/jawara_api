@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HouseController;
 use App\Http\Controllers\Api\PaymentChannelController;
 use App\Http\Controllers\Api\ActivityController;
+use App\Http\Controllers\Api\CitizenAcceptanceController;
+use App\Http\Controllers\Api\CitizenMessageController;
 use App\Http\Controllers\Api\UserController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -40,6 +42,16 @@ Route::middleware('jwt.auth')->group(function () {
 
     // LAPORAN
     Route::get('/finance/report', [\App\Http\Controllers\Api\TransactionController::class, 'report']);
+
+    // Endpoint List Warga
+    Route::get('/citizens/verification-list', [CitizenAcceptanceController::class, 'index']);
+
+    // Aspirasi Warga Routes
+    Route::get('/aspirasi', [CitizenMessageController::class, 'index']);
+    Route::post('/aspirasi', [CitizenMessageController::class, 'store']);
+    Route::get('/aspirasi/{id}', [CitizenMessageController::class, 'show']);
+    Route::put('/aspirasi/{id}', [CitizenMessageController::class, 'update']);
+    Route::delete('/aspirasi/{id}', [CitizenMessageController::class, 'destroy']);
 });
 
 Route::fallback(function () {

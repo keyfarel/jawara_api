@@ -1,0 +1,68 @@
+get:
+  tags:
+    - Aspirasi
+  summary: List semua aspirasi
+  description: |
+    - Admin dapat melihat semua aspirasi  
+    - User biasa hanya dapat melihat aspirasi miliknya  
+    Requires JWT Bearer Token.
+  security:
+    - BearerToken: []
+  responses:
+    '200':
+      description: Berhasil mengambil daftar aspirasi
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: "List Data Aspirasi"
+              data:
+                type: array
+                items:
+                  $ref: "../../schemas/aspirasi.yaml"
+    '401':
+      description: Unauthorized
+
+post:
+  tags:
+    - Aspirasi
+  summary: Buat aspirasi baru
+  security:
+    - BearerToken: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            title:
+              type: string
+              example: "Perbaikan Jalan"
+            description:
+              type: string
+              example: "Jalan di blok C rusak parah dan butuh diperbaiki."
+  responses:
+    '201':
+      description: Aspirasi berhasil dibuat
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: "Aspirasi berhasil dikirim"
+              data:
+                $ref: "../../schemas/aspirasi.yaml"
+    '422':
+      description: Validasi gagal

@@ -1,0 +1,89 @@
+get:
+  tags:
+    - Aspirasi
+  summary: Detail aspirasi
+  security:
+    - BearerToken: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+  responses:
+    '200':
+      description: Berhasil mengambil detail aspirasi
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: "Detail Aspirasi"
+              data:
+                $ref: "../../schemas/aspirasi.yaml"
+    '404':
+      description: Data tidak ditemukan
+
+put:
+  tags:
+    - Aspirasi
+  summary: Perbarui aspirasi
+  security:
+    - BearerToken: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            title:
+              type: string
+              example: "Perbaikan Jalan Raya"
+            description:
+              type: string
+              example: "Diperbarui karena lokasi lebih parah dari sebelumnya."
+            status:
+              type: string
+              enum: [pending, processed, completed, rejected]
+              example: processed
+  responses:
+    '200':
+      description: Aspirasi berhasil diperbarui
+    '400':
+      description: Aspirasi tidak dapat diubah (sudah diproses)
+    '403':
+      description: Tidak memiliki izin
+    '404':
+      description: Data tidak ditemukan
+
+delete:
+  tags:
+    - Aspirasi
+  summary: Hapus aspirasi
+  security:
+    - BearerToken: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+  responses:
+    '200':
+      description: Aspirasi berhasil dihapus
+    '403':
+      description: Tidak memiliki izin
+    '404':
+      description: Data tidak ditemukan

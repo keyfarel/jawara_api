@@ -44,6 +44,10 @@ paths:
   /api/finance/report:
     $ref: "./paths/finance/report.yaml"
 
+  # Citizens
+  /api/citizens:
+    $ref: "./paths/citizen/collection.yaml"
+
   # Options
   /api/houses/options:
     $ref: "./paths/houses/options.yaml"

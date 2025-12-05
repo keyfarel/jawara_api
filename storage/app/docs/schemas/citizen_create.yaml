@@ -1,0 +1,64 @@
+type: object
+required:
+  - family_id
+  - user_id
+  - nik
+  - name
+  - birth_place
+  - birth_date
+  - gender
+  - family_role
+properties:
+  family_id:
+    type: integer
+    example: 1
+  user_id:
+    type: integer
+    example: 10
+  nik:
+    type: string
+    example: "1234567890123456"
+  name:
+    type: string
+    example: John Doe
+  phone:
+    type: string
+    nullable: true
+    example: "08123456789"
+  birth_place:
+    type: string
+    example: Malang
+  birth_date:
+    type: string
+    format: date
+    example: 1998-05-01
+  gender:
+    type: string
+    example: male
+  religion:
+    type: string
+    nullable: true
+    example: Islam
+  blood_type:
+    type: string
+    nullable: true
+    example: O
+  id_card_photo:
+    type: string
+    nullable: true
+    example: "uploads/citizens/photo.jpg"
+  family_role:
+    type: string
+    example: husband
+  education:
+    type: string
+    nullable: true
+    example: Bachelor
+  occupation:
+    type: string
+    nullable: true
+    example: Engineer
+  status:
+    type: string
+    nullable: true
+    example: active

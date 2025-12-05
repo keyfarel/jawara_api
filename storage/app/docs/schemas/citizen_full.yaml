@@ -1,0 +1,33 @@
+type: object
+properties:
+  id:
+    type: integer
+    example: 1
+  nik:
+    type: string
+    example: "1234567890123456"
+  name:
+    type: string
+    example: John Doe
+  gender:
+    type: string
+    example: male
+  family_role:
+    type: string
+    example: husband
+  status:
+    type: string
+    example: active
+  house:
+    type: object
+    nullable: true
+    properties:
+      id:
+        type: integer
+        example: 4
+      house_name:
+        type: string
+        example: Blok A-12
+      address:
+        type: string
+        example: Malang

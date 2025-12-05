@@ -1,0 +1,66 @@
+get:
+  tags:
+    - Citizens
+  summary: Get list of citizens
+  description: Retrieve list of citizens along with related house data.
+  security:
+    - BearerToken: []
+  responses:
+    "200":
+      description: Citizens retrieved successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              message:
+                type: string
+                example: Citizens retrieved successfully
+              data:
+                type: array
+                items:
+                  $ref: "../../schemas/citizen_full.yaml"
+
+post:
+  tags:
+    - Citizens
+  summary: Create a new citizen record
+  description: Store new citizen data in database.
+  security:
+    - BearerToken: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../schemas/citizen_create.yaml"
+
+  responses:
+    "201":
+      description: Citizen created successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              message:
+                type: string
+                example: citizen added successfully
+              data:
+                $ref: "../../schemas/citizen_short.yaml"
+    "422":
+      description: Validation failed.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: The given data was invalid.

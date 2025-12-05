@@ -1,0 +1,44 @@
+type: object
+properties:
+  id:
+    type: integer
+    example: 1
+  family_id:
+    type: integer
+    example: 1
+  user_id:
+    type: integer
+    example: 10
+  nik:
+    type: string
+    example: "1234567890123456"
+  name:
+    type: string
+    example: John Doe
+  phone:
+    type: string
+    nullable: true
+  birth_place:
+    type: string
+    example: Malang
+  birth_date:
+    type: string
+    format: date
+    example: 1998-05-01
+  gender:
+    type: string
+    example: male
+  family_role:
+    type: string
+    example: husband
+  status:
+    type: string
+    example: active
+  created_at:
+    type: string
+    format: date-time
+    example: 2025-03-01T10:23:45.000000Z
+  updated_at:
+    type: string
+    format: date-time
+    example: 2025-03-01T10:23:45.000000Z

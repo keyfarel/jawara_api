@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\BillingController;
 use App\Http\Controllers\Api\CitizenAcceptanceController;
 use App\Http\Controllers\Api\CitizenMessageController;
 use App\Http\Controllers\Api\DuesTypeController;
+use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\UserController;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -38,13 +39,6 @@ Route::middleware('jwt.auth')->group(function () {
     Route::post('/mutations', [\App\Http\Controllers\Api\MutationController::class, 'store']);
     Route::get('/families/options', [\App\Http\Controllers\Api\FamilyController::class, 'options']);
 
-    // KEUANGAN (TRANSAKSI)
-    Route::get('/finance/incomes', [\App\Http\Controllers\Api\TransactionController::class, 'incomes']);
-    Route::get('/finance/expenses', [\App\Http\Controllers\Api\TransactionController::class, 'expenses']);
-
-    // LAPORAN
-    Route::get('/finance/report', [\App\Http\Controllers\Api\TransactionController::class, 'report']);
-
     // Endpoint List Warga
     Route::get('/citizens/verification-list', [CitizenAcceptanceController::class, 'index']);
 
@@ -68,6 +62,13 @@ Route::middleware('jwt.auth')->group(function () {
     Route::get('/billings/{id}', [BillingController::class, 'show']);
     Route::put('/billings/{id}', [BillingController::class, 'update']);
     Route::delete('/billings/{id}', [BillingController::class, 'destroy']);
+
+    // ROUTES CRUD PEMASUKAN LAIN (Other Incomes)
+    Route::get('/other-incomes', [TransactionController::class, 'indexIncome']);       // GET List
+    Route::post('/other-incomes', [TransactionController::class, 'storeIncome']);      // POST Create
+    Route::get('/other-incomes/{id}', [TransactionController::class, 'showIncome']);   // GET Detail
+    Route::put('/other-incomes/{id}', [TransactionController::class, 'updateIncome']); // PUT Update
+    Route::delete('/other-incomes/{id}', [TransactionController::class, 'destroyIncome']); // DELETE Remove
 });
 
 Route::fallback(function () {

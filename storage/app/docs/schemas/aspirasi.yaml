@@ -1,0 +1,43 @@
+type: object
+properties:
+  id:
+    type: integer
+    example: 12
+  user_id:
+    type: integer
+    example: 5
+  title:
+    type: string
+    example: "Perbaikan Lampu Jalan"
+  description:
+    type: string
+    example: "Lampu jalan di blok B mati sejak seminggu lalu."
+  status:
+    type: string
+    example: "pending"
+    enum:
+      - pending
+      - processed
+      - completed
+      - rejected
+  created_at:
+    type: string
+    format: date-time
+    example: "2025-12-03T01:20:00.000000Z"
+  updated_at:
+    type: string
+    format: date-time
+    example: "2025-12-03T01:20:00.000000Z"
+  user:
+    type: object
+    nullable: true
+    properties:
+      id:
+        type: integer
+        example: 5
+      email:
+        type: string
+        example: "user@example.com"
+      role:
+        type: string
+        example: "warga"

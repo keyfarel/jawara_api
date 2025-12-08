@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use App\Models\Citizen;
 use App\Models\Family;
 use App\Models\Activity;
+use App\Models\Transaction;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -39,29 +40,47 @@ class DashboardController extends Controller
     {
         // Logic to gather finance dashboard data
         $data = [
-            'total_income' => 1000000,
-            'total_expense' => 500000,
-            'total cash' => 500000,
-            'transactions' => 3,
-            'income_per_month' => [
-                'January' => 200000,
-                'February' => 300000,
-                'March' => 500000,
-            ],
-            'expense_per_month' => [
-                'January' => 100000,
-                'February' => 200000,
-                'March' => 200000,
-            ],
-            'income_per_category' => [
-                'government aid funds' => 600000,
-                'other income' => 400000,
-            ],
-            'expense_per_category' => [
-                'RT/RW operational' => 300000,
-                'facility maintenance' => 200000,
-                'community activities' => 200000,
-            ],
+
+        // Total Income & Expense
+        'total_income' => Transaction::where('type', 'income')->sum('amount'),
+        'total_expense' => Transaction::where('type', 'expense')->sum('amount'),
+
+        // Cash balance
+        'total_cash' => Transaction::where('type', 'income')->sum('amount')
+                        - Transaction::where('type', 'expense')->sum('amount'),
+
+        // transaction count
+        'transactions' => Transaction::count(),
+
+        // Income per month chart
+        'income_per_month' => Transaction::where('type', 'income')
+            ->selectRaw("MONTH(transaction_date) month, SUM(amount) total")
+            ->groupByRaw("MONTH(transaction_date)")
+            ->pluck('total', 'month')
+            ->mapWithKeys(fn($total, $m) => [
+                Carbon::create()->month($m)->format('F') => $total
+            ]),
+
+        // Expense per month chart
+        'expense_per_month' => Transaction::where('type', 'expense')
+            ->selectRaw("MONTH(transaction_date) month, SUM(amount) total")
+            ->groupByRaw("MONTH(transaction_date)")
+            ->pluck('total', 'month')
+            ->mapWithKeys(fn($total, $m) => [
+                Carbon::create()->month($m)->format('F') => $total
+            ]),
+
+        // Income per category
+        'income_per_category' => Transaction::where('type', 'income')
+            ->selectRaw("transaction_category_id, SUM(amount) total")
+            ->groupBy('transaction_category_id')
+            ->pluck('total', 'transaction_category_id'),
+
+        // Expense per category
+        'expense_per_category' => Transaction::where('type', 'expense')
+            ->selectRaw("transaction_category_id, SUM(amount) total")
+            ->groupBy('transaction_category_id')
+            ->pluck('total', 'transaction_category_id'),
         ];
 
         return response()->json($data);

@@ -1,0 +1,12 @@
+get:
+  summary: Activity Dashboard statistics
+  description: Shows activity distribution by status, category, and month.
+  tags:
+    - Dashboard
+  responses:
+    '200':
+      description: Activity dashboard data successfully fetched
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/dashboard_activity.yaml"

@@ -1,0 +1,56 @@
+type: object
+properties:
+  total_families:
+    type: integer
+    example: 300
+  total_population:
+    type: integer
+    example: 950
+  status_distribution:
+    type: object
+    additionalProperties:
+      type: integer
+    example:
+      active: 850
+      inactive: 100
+  gender_distribution:
+    type: object
+    additionalProperties:
+      type: integer
+    example:
+      male: 500
+      female: 450
+  roles_distribution:
+    type: object
+    additionalProperties:
+      type: integer
+    example:
+      Kepala Keluarga: 300
+      Ibu Rumah Tangga: 250
+      Anak: 400
+  religion_distribution:
+    type: object
+    additionalProperties:
+      type: integer
+    example:
+      Islam: 800
+      Kristen: 100
+      Hindu: 50
+  education_level_distribution:
+    type: object
+    additionalProperties:
+      type: integer
+    example:
+      SD: 300
+      SMP: 250
+      SMA: 200
+      Sarjana: 100
+  occupation_distribution:
+    type: object
+    additionalProperties:
+      type: integer
+    example:
+      Pegawai Negeri: 200
+      Wiraswasta: 300
+      Pelajar: 200
+      Tidak Bekerja: 250

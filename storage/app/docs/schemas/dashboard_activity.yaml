@@ -1,0 +1,33 @@
+type: object
+properties:
+  total_activities:
+    type: integer
+    example: 50
+  upcoming_activities:
+    type: integer
+    example: 8
+  ongoing_activities:
+    type: integer
+    example: 5
+  complete_activities:
+    type: integer
+    example: 30
+  cancelled_activities:
+    type: integer
+    example: 7
+  type_of_activity:
+    type: object
+    additionalProperties:
+      type: integer
+    example:
+      Sosial: 20
+      Olahraga: 10
+      Pendidikan: 15
+  activities_per_month:
+    type: object
+    additionalProperties:
+      type: integer
+    example:
+      January: 3
+      February: 6
+      March: 7

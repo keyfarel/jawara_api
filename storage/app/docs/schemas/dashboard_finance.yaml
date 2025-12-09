@@ -1,0 +1,42 @@
+type: object
+properties:
+  total_income:
+    type: number
+    example: 8000000
+  total_expense:
+    type: number
+    example: 3000000
+  total_cash:
+    type: number
+    example: 5000000
+  transactions:
+    type: integer
+    example: 150
+  income_per_month:
+    type: object
+    additionalProperties:
+      type: number
+    example:
+      January: 1200000
+      February: 900000
+  expense_per_month:
+    type: object
+    additionalProperties:
+      type: number
+    example:
+      January: 500000
+      February: 300000
+  income_per_category:
+    type: object
+    additionalProperties:
+      type: number
+    example:
+      "1": 2000000
+      "2": 3000000
+  expense_per_category:
+    type: object
+    additionalProperties:
+      type: number
+    example:
+      "1": 1000000
+      "4": 2000000

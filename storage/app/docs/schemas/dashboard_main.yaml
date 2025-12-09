@@ -1,0 +1,43 @@
+type: object
+properties:
+  total_population:
+    type: object
+    properties:
+      male_population:
+        type: integer
+        example: 1000
+      female_population:
+        type: integer
+        example: 900
+  total_families:
+    type: integer
+    example: 400
+  total_activity:
+    type: object
+    properties:
+      completed:
+        type: integer
+        example: 30
+      upcoming:
+        type: integer
+        example: 5
+      ongoing:
+        type: integer
+        example: 10
+  cash:
+    type: object
+    properties:
+      total_cash:
+        type: number
+        example: 5000000
+      income:
+        type: number
+        example: 8000000
+      expense:
+        type: number
+        example: 3000000
+  new_activity:
+    type: array
+    items:
+      type: string
+    example: ["Posyandu", "Festival RW", "Rapat Warga"]

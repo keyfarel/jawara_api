@@ -1,0 +1,12 @@
+get:
+  summary: Population Dashboard analytics
+  description: Provides demographic distributions, population statistics, and role-based breakdown.
+  tags:
+    - Dashboard
+  responses:
+    '200':
+      description: Population dashboard data successfully fetched
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/dashboard_population.yaml"

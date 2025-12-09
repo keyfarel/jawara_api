@@ -61,6 +61,16 @@ paths:
   /api/aspirasi/{id}:
     $ref: "./paths/aspirasi/detail.yaml"
 
+  # Dashboard
+  /api/dashboard/main:
+    $ref: "./paths/dashboard/main-dashboard.yaml"
+  /api/dashboard/finance:
+    $ref: "./paths/dashboard/finance-dashboard.yaml"
+  /api/dashboard/activity:
+    $ref: "./paths/dashboard/activity-dashboard.yaml"
+  /api/dashboard/population:
+    $ref: "./paths/dashboard/population-dashboard.yaml"
+
   # Options
   /api/houses/options:
     $ref: "./paths/houses/options.yaml"
@@ -102,3 +112,12 @@ components:
       $ref: "./schemas/family_full.yaml"
     Aspirasi:
       $ref: "./schemas/aspirasi.yaml"
+    dashboard_main:
+      $ref: "./schemas/dashboard_main.yaml"
+    dashboard_finance:
+      $ref: "./schemas/dashboard_finance.yaml"
+    dashboard_activity:
+      $ref: "./schemas/dashboard_activity.yaml"
+    dashboard_population:
+      $ref: "./schemas/dashboard_population.yaml"
+

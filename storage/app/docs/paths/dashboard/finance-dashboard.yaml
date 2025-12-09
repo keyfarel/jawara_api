@@ -1,0 +1,12 @@
+get:
+  summary: Finance Dashboard summary
+  description: Provides income, expense, balance, chart distribution per month and category.
+  tags:
+    - Dashboard
+  responses:
+    '200':
+      description: Finance dashboard data successfully fetched
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/dashboard_finance.yaml"

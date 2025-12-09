@@ -1,0 +1,12 @@
+get:
+  summary: Main Dashboard summary data
+  description: Provides global dashboard information such as population count, financial stats, and latest activities.
+  tags:
+    - Dashboard
+  responses:
+    '200':
+      description: Dashboard data successfully fetched
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/dashboard_main.yaml"

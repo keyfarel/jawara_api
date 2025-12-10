@@ -14,23 +14,45 @@ class DashboardController extends Controller
 {
     public function mainDashboard(): JsonResponse
     {
+        // Population
+        $malePopulation   = Citizen::where('gender', 'male')->count();
+        $femalePopulation = Citizen::where('gender', 'female')->count();
+
+        // Families
+        $totalFamilies = Family::count();
+
+        // Activity Status
+        $completedActivities = Activity::where('status', 'completed')->count();
+        $upcomingActivities  = Activity::where('status', 'upcoming')->count();
+        $ongoingActivities   = Activity::where('status', 'ongoing')->count();
+
+        // Finance
+        $totalIncome  = Transaction::where('type', 'income')->sum('amount');
+        $totalExpense = Transaction::where('type', 'expense')->sum('amount');
+        $totalCash    = $totalIncome - $totalExpense;
+
+        // Latest 5 activities
+        $latestActivities = Activity::orderBy('activity_date', 'desc')
+            ->limit(5)
+            ->pluck('name'); // array string nama activity
+
         $data = [
-            'total population' => [
-                'male population' => 1000, // laki - laki
-                'female population' => 1000, // perempuan
-            ], // total populasi
-            'total families' => 500, // total keluarga
-            'total activity' => [
-                'completed' => 120,
-                'upcoming' => 30,
-                'ongoing' => 10,
-            ], // total aktivitas
-            'cash' => [
-                'total cash' => 7500000, // total kas
-                'income' => 5000000, // total pemasukan
-                'expense' => 2500000, // total pengeluaran
+            'total_population' => [
+                'male_population'   => $malePopulation,
+                'female_population' => $femalePopulation,
             ],
-            'new activity' => ['activity1', 'activity2', 'activity3']
+            'total_families' => $totalFamilies,
+            'total_activity' => [
+                'completed' => $completedActivities,
+                'upcoming'  => $upcomingActivities,
+                'ongoing'   => $ongoingActivities,
+            ],
+            'cash' => [
+                'total_cash' => $totalCash,
+                'income'     => $totalIncome,
+                'expense'    => $totalExpense,
+            ],
+            'new_activity' => $latestActivities,
         ];
 
         return response()->json($data);

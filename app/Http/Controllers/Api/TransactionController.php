@@ -101,7 +101,7 @@ class TransactionController extends Controller
 
     /**
      * 4. PUT: Update Pemasukan
-     * Catatan: Untuk update gambar via API, Client harus menggunakan method POST 
+     * Catatan: Untuk update gambar via API, Client harus menggunakan method POST
      * dengan field _method = PUT di body.
      */
     public function updateIncome(Request $request, $id)
@@ -151,7 +151,7 @@ class TransactionController extends Controller
         $transaction->transaction_category_id = $request->transaction_category_id;
         $transaction->amount                  = $request->amount;
         $transaction->description             = $request->description;
-        
+
         $transaction->save();
 
         return response()->json([
@@ -187,5 +187,43 @@ class TransactionController extends Controller
             'success' => true,
             'message' => 'Data pemasukan berhasil dihapus',
         ], 200);
+    }
+
+    /**
+     * H.3 Cetak Laporan (Rekap Data)
+     * Mengembalikan data transaksi berdasarkan rentang tanggal dan tipe.
+     */
+    public function report(\App\Http\Requests\Transaction\GenerateReportRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+        $startDate = $validated['start_date'];
+        $endDate   = $validated['end_date'];
+        $filterType = $validated['type'] ?? 'all'; // Default ambil semua
+
+        // Query Dasar
+        $query = Transaction::with('category')
+            ->whereBetween('transaction_date', [$startDate, $endDate]);
+
+        // Jika user memilih filter spesifik (hanya income saja / expense saja)
+        if ($filterType !== 'all') {
+            $query->where('type', $filterType);
+        }
+
+        $transactions = $query->orderBy('transaction_date', 'asc')->get();
+
+        // Hitung Total di Server
+        $totalIncome = $transactions->where('type', 'income')->sum('amount');
+        $totalExpense = $transactions->where('type', 'expense')->sum('amount');
+
+        return response()->json([
+            'status' => 'success',
+            'meta'   => [
+                'period' => "$startDate s/d $endDate",
+                'total_income' => (int) $totalIncome,
+                'total_expense' => (int) $totalExpense,
+                'net_balance'  => (int) ($totalIncome - $totalExpense) // Saldo Bersih
+            ],
+            'data' => $transactions
+        ]);
     }
 }

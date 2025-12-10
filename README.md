@@ -14,6 +14,7 @@
         id pk
         string status "permanent, moved, deceased"
         string id_card_photo "Foto KTP"
+        string verified_selfie_photo "Foto Selfie Valid (Untuk Login)"
     }
 
     HOUSES ||--o{ FAMILIES : accommodates

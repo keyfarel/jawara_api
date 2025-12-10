@@ -84,7 +84,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::delete('/billings/{id}', [BillingController::class, 'destroy']);
 
     // ROUTES CRUD PEMASUKAN LAIN (Other Incomes)
-    Route::get('/other-incomes', [TransactionController::class, 'indexIncome']);       // GET List
+    Route::get('/other-incomes', [TransactionController::class, 'indexIncome']);       // GET List (Income)
+    Route::get('/other-expenses', [TransactionController::class, 'indexExpense']);       // GET List (Expense)
     Route::post('/other-incomes', [TransactionController::class, 'storeIncome']);      // POST Create
     Route::get('/other-incomes/{id}', [TransactionController::class, 'showIncome']);   // GET Detail
     Route::put('/other-incomes/{id}', [TransactionController::class, 'updateIncome']); // PUT Update

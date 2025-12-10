@@ -20,4 +20,4 @@ get:
               data:
                 type: array
                 items:
-                  $ref: '../../schemas/transaction_item.yaml'
+                  $ref: '../../schemas/income.yaml'

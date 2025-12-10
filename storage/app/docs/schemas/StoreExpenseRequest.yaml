@@ -1,0 +1,61 @@
+components:
+  schemas:
+    # Schema untuk Object Data Pengeluaran
+    ExpenseData:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 7
+        user_id:
+          type: integer
+          example: 1
+        transaction_category_id:
+          type: string
+          example: "1"
+        billing_id:
+          type: integer
+          nullable: true
+          example: null
+        title:
+          type: string
+          example: "Beli IOT KIT"
+        type:
+          type: string
+          example: "expense"
+        amount:
+          type: string
+          example: "250000"
+        transaction_date:
+          type: string
+          format: date
+          example: "2025-10-10"
+        description:
+          type: string
+          nullable: true
+          example: null
+        proof_image_link:
+          type: string
+          format: uri
+          example: "http://127.0.0.1:8000/storage/proofs/CvpgTfhezVc9V84t6zpUuTVEbFdvxdHoeiLixzHb.png"
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-12-10T14:43:19.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2025-12-10T14:43:19.000000Z"
+
+    # Schema Utama Response (Success Wrapper)
+    ExpenseResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Pengeluaran berhasil ditambahkan"
+        data:
+          $ref: '#/components/schemas/ExpenseData'

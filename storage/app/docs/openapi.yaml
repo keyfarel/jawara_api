@@ -4,10 +4,12 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://unmoaning-lenora-photomechanically.ngrok-free.dev
-    description: Ngrok Tunnel Server (Default)
   - url: http://127:0:0:1:8000
     description: Local Development Server
+  - url: https://unmoaning-lenora-photomechanically.ngrok-free.dev
+    description: Ngrok Tunnel Server (Default)
+  # - url: http://127:0:0:1:8000
+  #   description: Local Development Server
 
 paths:
 
@@ -46,12 +48,13 @@ paths:
     $ref: "./paths/announcements/collection.yaml"
 
   # Finance
-  /api/finance/incomes:
+  /api/other-incomes:
     $ref: "./paths/finance/incomes.yaml"
-  /api/finance/expenses:
-    $ref: "./paths/finance/expenses.yaml"
+  /api/other-expenses:
+    $ref: "./paths/finance/collection.yaml"
   /api/finance/report:
     $ref: "./paths/finance/report.yaml"
+
 
   # Citizens
   /api/citizens:
@@ -107,6 +110,10 @@ components:
       $ref: "./schemas/mutation.yaml"
     Announcement:
       $ref: "./schemas/announcement.yaml"
+    incomes:
+      $ref: "./schemas/incomes.yaml"
+    expenses:
+      $ref: "./schemas/expenses.yaml"
     TransactionItem:
       $ref: "./schemas/transaction_item.yaml"
     FinancialReport:

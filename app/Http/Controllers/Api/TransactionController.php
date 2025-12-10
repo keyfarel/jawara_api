@@ -31,6 +31,24 @@ class TransactionController extends Controller
     }
 
     /**
+     * 1. GET: List Semua Pemasukan Lain
+     */
+    public function indexExpense()
+    {
+        // Ambil semua transaksi dengan type 'expense'
+        $expense = Transaction::with('category') // Eager load kategori agar efisien
+            ->where('type', 'expense')
+            ->orderBy('transaction_date', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'List Data Pemasukan Lain',
+            'data'    => $expense
+        ], 200);
+    }
+
+    /**
      * 2. GET: Detail Pemasukan Lain (By ID)
      */
     public function showIncome($id)
@@ -49,6 +67,28 @@ class TransactionController extends Controller
             'success' => true,
             'message' => 'Detail Data Pemasukan',
             'data'    => $income
+        ], 200);
+    }
+
+    /**
+     * 2. GET: Detail Pemasukan Lain (By ID)
+     */
+    public function showExpense($id)
+    {
+        // Cari transaksi berdasarkan ID dan pastikan type-nya 'income'
+        $expense = Transaction::with('category')->where('type', 'expense')->find($id);
+
+        if (!$expense) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data pengeluaran tidak ditemukan',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Detail Data pengeluaran',
+            'data'    => $expense
         ], 200);
     }
 

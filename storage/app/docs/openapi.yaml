@@ -49,12 +49,15 @@ paths:
 
   # Finance
   /api/other-incomes:
-    $ref: "./paths/finance/incomes.yaml"
+    $ref: "./paths/finance/collectionIncomes.yaml"
   /api/other-expenses:
-    $ref: "./paths/finance/collection.yaml"
+    $ref: "./paths/finance/collectionExpenses.yaml"
   /api/finance/report:
     $ref: "./paths/finance/report.yaml"
 
+  #Billings
+  /api/billings:
+    $ref: "./paths/billings/collection.yaml"
 
   # Citizens
   /api/citizens:

@@ -1,0 +1,80 @@
+get:
+  tags:
+    - Finance
+  summary: Get Incomes
+  description: Mengambil daftar semua pemasukan, diurutkan dari yang terbaru.
+  operationId: getIncomes
+  security:
+    - BearerToken: []
+  responses:
+    200:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              data:
+                type: array
+                items:
+                  $ref: '../../schemas/income.yaml'
+
+post:
+  tags:
+    - Finance
+  summary: Create Other Income
+  description: Menambah data pemasukan baru (mendukung upload bukti).
+  operationId: storeOtherIncome
+  security:
+    - BearerToken: []
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          required:
+            - transaction_category_id
+            - title
+            - amount
+            - transaction_date
+          properties:
+            transaction_category_id:
+              type: integer
+              example: 1
+            title:
+              type: string
+              example: "Jual Besi Tua (Revisi)"
+            amount:
+              type: string
+              example: "120000"
+            transaction_date:
+              type: string
+              format: date
+              example: "2025-10-10"
+            description:
+              type: string
+              nullable: true
+            proof_image:
+              type: string
+              format: binary
+              description: File gambar bukti transaksi
+  responses:
+    201:
+      description: Created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: "Pemasukan berhasil ditambahkan"
+              data:
+                $ref: '../../schemas/income.yaml'

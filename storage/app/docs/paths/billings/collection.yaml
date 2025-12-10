@@ -1,0 +1,82 @@
+get:
+  tags:
+    - Billings
+  summary: Get Billing List
+  description: Mengambil daftar tagihan (mendukung pagination).
+  operationId: getBillings
+  security:
+    - BearerToken: []
+  responses:
+    200:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: "List Data Tagihan"
+              data:
+                type: object
+                properties:
+                  current_page:
+                    type: integer
+                    example: 1
+                  data:
+                    type: array
+                    items:
+                      $ref: '../../schemas/billing.yaml'
+
+post:
+  tags:
+    - Billings
+  summary: Create Billing
+  description: Membuat tagihan iuran baru secara manual.
+  operationId: storeBilling
+  security:
+    - BearerToken: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - family_id
+            - dues_type_id
+            - period
+            - amount
+          properties:
+            family_id:
+              type: integer
+              example: 1
+            dues_type_id:
+              type: integer
+              example: 3
+            period:
+              type: string
+              description: "Format teks, contoh: Desember 2025"
+              example: "Desember 2025"
+            amount:
+              type: integer
+              example: 100000
+  responses:
+    201:
+      description: Created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: "Tagihan berhasil dibuat"
+              data:
+                $ref: '../../schemas/billing.yaml'

@@ -4,13 +4,13 @@ info:
   version: 1.0.0
 
 servers:
-  - url: http://127.0.0.1:8000
-    description: Local Development Server
   - url: https://unmoaning-lenora-photomechanically.ngrok-free.dev
     description: Ngrok Tunnel Server (Default)
+  - url: http://127:0:0:1:8000
+    description: Local Development Server
 
 paths:
-  # include modular files
+
   # Auth
   /api/register:
     $ref: "./paths/auth/register.yaml"
@@ -20,22 +20,31 @@ paths:
     $ref: "./paths/auth/refresh_token.yaml"
   /api/logout:
     $ref: "./paths/auth/logout.yaml"
+
+  # Users
   /api/users:
     $ref: "./paths/users/collection.yaml"
   /api/users/{id}:
     $ref: "./paths/users/detail.yaml"
+
+  # Activities
   /api/activities:
     $ref: "./paths/activities/list.yaml"
+
+  # Payment Channels
   /api/payment-channels:
     $ref: "./paths/payment_channels/collection.yaml"
   /api/payment-channels/{id}:
     $ref: "./paths/payment_channels/detail.yaml"
-  # mutations
+
+  # Mutations
   /api/mutations:
     $ref: "./paths/mutations/collection.yaml"
+
   # Announcements
   /api/announcements:
     $ref: "./paths/announcements/collection.yaml"
+
   # Finance
   /api/finance/incomes:
     $ref: "./paths/finance/incomes.yaml"
@@ -48,13 +57,14 @@ paths:
   /api/citizens:
     $ref: "./paths/citizen/collection.yaml"
 
-  #houses
+  # Houses
   /api/houses:
     $ref: "./paths/houses/collection.yaml"
 
-  #families
+  # Families
   /api/families:
     $ref: "./paths/families/collection.yaml"
+
   # Aspirasi
   /api/aspirasi:
     $ref: "./paths/aspirasi/collection.yaml"
@@ -76,6 +86,7 @@ paths:
     $ref: "./paths/houses/options.yaml"
   /api/families/options:
     $ref: "./paths/families/options.yaml"
+
 components:
   securitySchemes:
     BearerToken:
@@ -89,7 +100,7 @@ components:
     Activity:
       $ref: "./schemas/activity.yaml"
     PaymentChannel:
-       $ref: "./schemas/payment_channel.yaml"
+      $ref: "./schemas/payment_channel.yaml"
     User Full:
       $ref: "./schemas/user_full.yaml"
     Mutation:
@@ -99,7 +110,7 @@ components:
     TransactionItem:
       $ref: "./schemas/transaction_item.yaml"
     FinancialReport:
-        $ref: "./schemas/financial_report.yaml"
+      $ref: "./schemas/financial_report.yaml"
     CitizenShort:
       $ref: "./schemas/citizen_short.yaml"
     CitizenFull:
@@ -120,4 +131,3 @@ components:
       $ref: "./schemas/dashboard_activity.yaml"
     dashboard_population:
       $ref: "./schemas/dashboard_population.yaml"
-

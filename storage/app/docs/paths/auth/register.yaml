@@ -3,8 +3,10 @@ post:
     - Authentication
   summary: Register User (Warga Baru)
   description: |
-    Mendaftarkan user baru, membuat data Citizen, Family (KK), dan House (jika belum ada).
-    Memerlukan upload foto KTP.
+    Mendaftarkan user baru, membuat data Citizen, Family (KK), dan House.
+
+    Fitur Tambahan:
+    - **Face Verification**: Jika `selfie_photo` diupload, sistem akan membandingkan wajah di selfie dengan wajah di KTP secara otomatis.
   requestBody:
     required: true
     content:
@@ -20,7 +22,6 @@ post:
             - nik
             - gender
             - id_card_photo
-            - kk_number
             - ownership_status
             - family_role
           properties:
@@ -37,9 +38,11 @@ post:
               example: "081234567890"
             password:
               type: string
+              format: password
               example: password123
             password_confirmation:
               type: string
+              format: password
               example: password123
 
             # --- Data Citizen ---
@@ -51,22 +54,39 @@ post:
               type: string
               enum: [male, female]
               example: male
+
+            # --- Dokumen & Biometrik ---
             id_card_photo:
               type: string
               format: binary
-              description: File gambar (jpg/png, max 2MB)
+              description: "Foto KTP Wajib (jpg/png, max 5MB)"
+
+            selfie_photo:
+              type: string
+              format: binary
+              nullable: true
+              description: |
+                [OPSIONAL] Foto Selfie Wajah.
+                Jika diisi, akan dilakukan verifikasi wajah dengan KTP.
+                Jika wajah tidak cocok, registrasi akan gagal.
+
+            # --- Detail Tambahan ---
             birth_place:
               type: string
+              nullable: true
               example: "Jakarta"
             birth_date:
               type: string
               format: date
+              nullable: true
               example: "1990-01-01"
             religion:
               type: string
+              nullable: true
               example: "Islam"
             blood_type:
               type: string
+              nullable: true
               enum: [A, B, AB, O]
               example: "O"
             family_role:
@@ -77,33 +97,27 @@ post:
             # --- Data Keluarga (KK) ---
             kk_number:
               type: string
-              description: 16 digit No KK
+              nullable: true
+              description: 16 digit No KK (Opsional)
               example: "3276010000000001"
             ownership_status:
               type: string
-              enum: [owner, renter]
+              enum: [owner, renter, family, other]
               example: owner
 
             # --- Data Rumah (Pilih SATU opsi: ID atau Detail Baru) ---
             house_id:
               type: integer
               nullable: true
-              description: Isi jika ingin bergabung ke rumah yang sudah ada di sistem
+              description: Isi ID rumah jika ingin bergabung ke rumah yang sudah ada
               example: null
-            house_name:
+
+            # Jika house_id kosong, field di bawah ini wajib:
+            custom_house_address:
               type: string
               nullable: true
-              description: Wajib jika house_id kosong (misal: Blok A No 1)
-              example: "Blok A No. 12"
-            house_address:
-              type: string
-              nullable: true
-              description: Wajib jika house_id kosong
+              description: "Alamat rumah manual (Wajib jika house_id kosong)"
               example: "Jl. Mawar No. 12, Jakarta"
-            house_type:
-              type: string
-              nullable: true
-              example: "Type 36"
 
   responses:
     201:
@@ -118,7 +132,7 @@ post:
                 example: success
               message:
                 type: string
-                example: Registration successful. Please wait for admin verification.
+                example: Register successful with face verification.
               data:
                 type: object
                 properties:
@@ -135,4 +149,20 @@ post:
                     $ref: "../../schemas/user_full.yaml"
 
     422:
-      $ref: "../../responses/Auth/validation.yaml"
+      description: Validation Error or Face Mismatch
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Verifikasi Wajah Gagal"
+              errors:
+                type: object
+                properties:
+                  selfie_photo:
+                    type: array
+                    items:
+                      type: string
+                    example: ["Wajah tidak cocok dengan KTP"]

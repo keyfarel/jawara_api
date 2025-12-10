@@ -59,3 +59,71 @@ post:
 
     401:
       $ref: "../../responses/Auth/unauthorized.yaml"
+
+/auth/login-face:
+  post:
+    tags:
+      - Authentication
+    summary: Login with Face Recognition
+    description: |
+      Login menggunakan foto selfie secara langsung (tanpa password).
+      Sistem akan mencocokkan wajah yang diupload dengan database wajah warga (1:N Search).
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            required:
+              - selfie_photo
+            properties:
+              selfie_photo:
+                type: string
+                format: binary
+                description: "Foto selfie live dari kamera (jpg/png)"
+    responses:
+      200:
+        description: Login successful
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: success
+                message:
+                  type: string
+                  example: Login successful
+                data:
+                  type: object
+                  properties:
+                    access_token:
+                      type: string
+                      example: eyJhbGciOiJIUzI1NiIs...
+                    refresh_token:
+                      type: string
+                      example: "uuid-token..."
+                    token_type:
+                      type: string
+                      example: bearer
+                    expires_in:
+                      type: integer
+                      example: 3600
+                    user:
+                      $ref: "../../schemas/user_full.yaml"
+      401:
+        description: Face not recognized
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: error
+                message:
+                  type: string
+                  example: Wajah tidak dikenali atau tidak terdaftar.
+      422:
+        $ref: "../../responses/Auth/validation.yaml"

@@ -3,6 +3,8 @@ get:
   description: Provides global dashboard information such as population count, financial stats, and latest activities.
   tags:
     - Dashboard
+  security:
+    - BearerToken: [ ]
   responses:
     '200':
       description: Dashboard data successfully fetched

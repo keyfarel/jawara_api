@@ -3,6 +3,8 @@ get:
   description: Provides demographic distributions, population statistics, and role-based breakdown.
   tags:
     - Dashboard
+  security:
+    - BearerToken: [ ]
   responses:
     '200':
       description: Population dashboard data successfully fetched

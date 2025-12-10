@@ -2,6 +2,8 @@ get:
   summary: Get list of all families including house and citizens relation
   tags:
     - Families
+  security:
+    - BearerToken: [ ]
   responses:
     '200':
       description: List of family records

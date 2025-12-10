@@ -3,6 +3,8 @@ get:
   description: Shows activity distribution by status, category, and month.
   tags:
     - Dashboard
+  security:
+    - BearerToken: [ ]
   responses:
     '200':
       description: Activity dashboard data successfully fetched

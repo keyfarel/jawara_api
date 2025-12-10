@@ -14,7 +14,9 @@ class CitizensController extends Controller
      */
     public function index(): jsonResponse
     {
-        $citizens = Citizen::with('house')
+        // UBAH DISINI: dari 'house' menjadi 'family.house'
+        // Artinya: Load Family dulu, lalu dari Family load House
+        $citizens = Citizen::with('family.house')
             ->orderBy('name')
             ->get();
 

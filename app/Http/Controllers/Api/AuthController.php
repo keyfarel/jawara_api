@@ -14,9 +14,11 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
@@ -36,11 +38,16 @@ class AuthController extends Controller
         /** @var User $user */
         $user = auth()->user();
 
-        // Load relasi citizen agar frontend tahu siapa yang login
-        // Load juga family dan house untuk kebutuhan dashboard
+        if ($user->registration_status === 'rejected') {
+            JWTAuth::invalidate($accessToken);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Akun Anda telah ditolak atau dinonaktifkan oleh Admin.',
+            ], 403);
+        }
+
         $user->load(['citizen.family.house']);
 
-        // Generate refresh token
         $refreshToken = Str::uuid()->toString();
         RefreshToken::create([
             'user_id' => $user->id,
@@ -56,9 +63,101 @@ class AuthController extends Controller
                 'refresh_token' => $refreshToken,
                 'token_type'    => 'bearer',
                 'expires_in'    => JWTAuth::factory()->getTTL() * 60,
-                'user' => $user // User object sekarang include citizen & role
+                'user' => $user
             ]
         ]);
+    }
+
+    public function loginFace(Request $request): JsonResponse
+    {
+        // 1. Validasi Input
+        $request->validate([
+            'selfie_photo' => 'required|image|max:10240', // Max 10MB
+        ]);
+
+        // URL API Python (Ngrok)
+        $pythonApiUrl = 'https://caliphal-dallas-wriggly.ngrok-free.dev/find-face';
+
+        try {
+            $photo = $request->file('selfie_photo');
+
+            // 2. Kirim Foto ke Python untuk Pencarian 1:N
+            $response = Http::withoutVerifying()
+                ->timeout(60) // Waktu tunggu agak lama untuk pencarian database
+                ->attach(
+                    'selfie', // Key ini harus sama dengan parameter di Python (def find_face(selfie...))
+                    file_get_contents($photo),
+                    $photo->getClientOriginalName()
+                )->post($pythonApiUrl);
+
+            $result = $response->json();
+
+            // 3. Cek Response dari Python
+            // Harapan response sukses: { "status": "found", "match_filename": "biometrics/nama_file.jpg" }
+            if (($result['status'] ?? 'error') !== 'found') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Wajah tidak dikenali atau belum terdaftar.',
+                ], 401);
+            }
+
+            // 4. Cari User di Database berdasarkan Filename
+            // Python mengembalikan path file yang cocok, kita cari di tabel citizens
+            $matchedFilename = $result['match_filename'];
+
+            // Tips: Pastikan format path di DB dan di Python konsisten (misal: "biometrics/foto.jpg")
+            $citizen = Citizen::where('verified_selfie_photo', $matchedFilename)->first();
+
+            if (!$citizen || !$citizen->user) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Data user tidak ditemukan (Foto ada tapi user tidak ada).',
+                ], 404);
+            }
+
+            $user = $citizen->user;
+
+            // 5. Cek Status Akun (PENTING)
+            if ($user->registration_status === 'rejected') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Akun Anda telah dinonaktifkan.',
+                ], 403);
+            }
+
+            // 6. Generate Token (Login Sukses)
+            $token = JWTAuth::fromUser($user);
+            $refreshToken = Str::uuid()->toString();
+
+            RefreshToken::create([
+                'user_id'    => $user->id,
+                'token'      => $refreshToken,
+                'expires_at' => now()->addDays(30),
+            ]);
+
+            // Load Data Lengkap
+            $user->load(['citizen.family.house']);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Login berhasil via Wajah',
+                'data' => [
+                    'access_token'  => $token,
+                    'refresh_token' => $refreshToken,
+                    'token_type'    => 'bearer',
+                    'expires_in'    => JWTAuth::factory()->getTTL() * 60,
+                    'user'          => $user
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error("Face Login Error: " . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Layanan verifikasi wajah sedang sibuk. Silakan gunakan password.',
+                'debug' => $e->getMessage() // Hapus line ini saat production
+            ], 500);
+        }
     }
 
     /**
@@ -68,6 +167,72 @@ class AuthController extends Controller
     {
         return DB::transaction(function () use ($request) {
             $validated = $request->validated();
+
+            // --- 0. CEK VERIFIKASI WAJAH (Jika ada selfie) ---
+            $selfiePath = null;
+
+            if ($request->hasFile('selfie_photo')) {
+                $ktpFile = $request->file('id_card_photo');
+                $selfieFile = $request->file('selfie_photo');
+
+                // URL Ngrok Python dari Colab (Ganti setiap kali run Colab)
+                $pythonApiUrl = 'https://caliphal-dallas-wriggly.ngrok-free.dev/verify';
+
+                try {
+                    $response = Http::withoutVerifying()
+                        ->timeout(60)
+                        ->attach(
+                            'ktp', file_get_contents($ktpFile), $ktpFile->getClientOriginalName()
+                        )->attach(
+                            'selfie', file_get_contents($selfieFile), $selfieFile->getClientOriginalName()
+                        )->post($pythonApiUrl);
+
+                    $result = $response->json();
+
+                    // 1. Cek Error Logika (Wajah Tidak Cocok)
+                    // Ini bukan error koneksi, tapi error validasi dari Python
+                    if ($response->failed() || ($result['status'] ?? 'error') === 'error') {
+                        throw ValidationException::withMessages([
+                            'selfie_photo' => [$result['message'] ?? 'Wajah tidak cocok.'],
+                        ]);
+                    }
+
+                    if ($selfiePath) {
+                        try {
+                            // $selfiePath contoh: "biometrics/abc12345.jpg"
+                            // Kita kirim file fisiknya ke endpoint /add-face
+
+                            // URL Python (Pastikan variabel ini sama dengan yang di atas)
+                            $pythonApiUrl = 'https://caliphal-dallas-wriggly.ngrok-free.dev';
+
+                            Http::withoutVerifying()
+                                ->timeout(30)
+                                ->attach(
+                                    'file', // Key sesuai parameter di Python: add_face(file: UploadFile)
+                                    file_get_contents(storage_path('app/public/'.$selfiePath)),
+                                    basename($selfiePath) // Kirim nama file asli "abc12345.jpg"
+                                )
+                                ->post($pythonApiUrl . '/add-face');
+
+                        } catch (\Exception $e) {
+                            // Silent fail: Jangan batalkan register cuma karena gagal sync
+                            // Log error agar kita tahu
+                            Log::error("Gagal sync foto ke Colab: " . $e->getMessage());
+                        }
+                    }
+
+                } catch (ValidationException $e) {
+                    throw $e;
+
+                } catch (Exception $e) {
+
+                    Log::error("Face Verification System Error: " . $e->getMessage()); // Log buat admin
+
+                    throw ValidationException::withMessages([
+                        'selfie_photo' => ['Gagal menghubungi server verifikasi wajah. Cek koneksi atau coba lagi.'],
+                    ]);
+                }
+            }
 
             // 1. Create User Account (SAMA)
             $user = User::create([
@@ -105,9 +270,9 @@ class AuthController extends Controller
             ]);
 
             // 4. Handle Citizen (Warga) (SAMA)
-            $photoPath = null;
+            $ktpPath = null;
             if ($request->hasFile('id_card_photo')) {
-                $photoPath = $request->file('id_card_photo')->store('id_cards', 'public');
+                $ktpPath = $request->file('id_card_photo')->store('id_cards', 'public');
             }
 
             Citizen::create([
@@ -117,15 +282,15 @@ class AuthController extends Controller
                 'name'          => $validated['full_name'],
                 'phone'         => $validated['phone'],
                 'gender'        => $validated['gender'],
-                'id_card_photo' => $photoPath,
-                'family_role'   => 'Kepala Keluarga', // Default
+                'id_card_photo' => $ktpPath,
+                'verified_selfie_photo' => $selfiePath, // <--- Simpan Path Selfie Disini
+                'family_role'   => 'Kepala Keluarga',
                 'birth_place'   => null,
                 'birth_date'    => null,
                 'religion'      => null,
                 'blood_type'    => null,
                 'status'        => 'permanent'
             ]);
-
             // 5. Generate Token (SAMA)
             $accessToken  = JWTAuth::fromUser($user);
             $refreshToken = Str::uuid()->toString();
@@ -141,7 +306,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'status'  => 'success',
-                'message' => 'Register successful',
+                'message' => 'Register successful' . ($selfiePath ? ' with face verification.' : '.'),
                 'data'    => [
                     'access_token'  => $accessToken,
                     'refresh_token' => $refreshToken,

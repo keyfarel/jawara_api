@@ -21,6 +21,7 @@ class Citizen extends Model
         'religion',
         'blood_type',
         'id_card_photo',
+        'verified_selfie_photo',
         'family_role',
         'education',
         'occupation',

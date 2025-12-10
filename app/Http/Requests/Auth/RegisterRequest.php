@@ -24,6 +24,7 @@ class RegisterRequest extends FormRequest
             'nik'           => 'required|string|size:16|unique:citizens,nik',
             'gender'        => 'required|in:male,female',
             'id_card_photo' => 'required|image|max:5120', // Max 5MB biar aman
+            'selfie_photo'  => 'nullable|image|max:5120',
 
             // Field ini TIDAK dikirim Flutter saat register, jadi buat nullable
             'birth_place'   => 'nullable|string',

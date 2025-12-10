@@ -1,6 +1,8 @@
 get:
   tags:
     - Houses
+  security:
+    - BearerToken: [ ]
   summary: Get list of houses
   description: Retrieve all registered houses ordered by house name.
   responses:
@@ -25,6 +27,8 @@ get:
 post:
   tags:
     - Houses
+  security:
+    - BearerToken: [ ]
   summary: Create new house
   description: Store new house data in the database
   requestBody:

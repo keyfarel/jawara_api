@@ -3,6 +3,8 @@ get:
   description: Provides income, expense, balance, chart distribution per month and category.
   tags:
     - Dashboard
+  security:
+    - BearerToken: [ ]
   responses:
     '200':
       description: Finance dashboard data successfully fetched

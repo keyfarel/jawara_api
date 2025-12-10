@@ -103,8 +103,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::delete('/billings/{id}', [BillingController::class, 'destroy']);
 
     /* Other Income */
-    Route::get('/other-incomes', [TransactionController::class, 'indexIncome']); (Income)
-    Route::get('/other-expenses', [TransactionController::class, 'indexExpense']);       // GET List (Expense)
+    Route::get('/other-incomes', [TransactionController::class, 'indexIncome']); 
+    Route::get('/other-expenses', [TransactionController::class, 'indexExpense']);      
     Route::post('/other-incomes', [TransactionController::class, 'storeIncome']);
     Route::get('/other-incomes/{id}', [TransactionController::class, 'showIncome']);
     Route::put('/other-incomes/{id}', [TransactionController::class, 'updateIncome']);

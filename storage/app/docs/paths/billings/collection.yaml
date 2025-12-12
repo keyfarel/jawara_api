@@ -29,7 +29,7 @@ get:
                   data:
                     type: array
                     items:
-                      $ref: '../../schemas/billing.yaml'
+                      $ref: '#/components/schemas/Billing'
 
 post:
   tags:
@@ -79,4 +79,4 @@ post:
                 type: string
                 example: "Tagihan berhasil dibuat"
               data:
-                $ref: '../../schemas/billing.yaml'
+                $ref: '#/components/schemas/Billing'

@@ -1,0 +1,98 @@
+get:
+  tags:
+    - Finance
+  summary: Get Expenses
+  description: Mengambil daftar semua pengeluaran, diurutkan dari yang terbaru.
+  operationId: getExpenses
+  security:
+    - BearerToken: []
+  responses:
+    200:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              data:
+                type: array
+                items:
+                  $ref: '../../schemas/expense.yaml'
+
+post:
+  tags:
+    - Finance
+  summary: Create Expense
+  description: Menambahkan data pengeluaran baru (mendukung upload bukti gambar).
+  operationId: createExpense
+  security:
+    - BearerToken: []
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          required:
+            - transaction_category_id
+            - title
+            - amount
+            - transaction_date
+          properties:
+            transaction_category_id:
+              type: integer
+              example: 1
+            billing_id:
+              type: integer
+              nullable: true
+              example: null
+            title:
+              type: string
+              example: "Beli IOT KIT"
+            amount:
+              type: string
+              description: Nominal pengeluaran
+              example: "250000"
+            transaction_date:
+              type: string
+              format: date
+              example: "2025-10-10"
+            description:
+              type: string
+              nullable: true
+              example: "Pembelian komponen untuk skripsi"
+            proof_image:
+              type: string
+              format: binary
+              description: File gambar bukti transaksi (jpg, png, jpeg)
+  responses:
+    201:
+      description: Created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: "Pengeluaran berhasil ditambahkan"
+              data:
+                $ref: '../../schemas/expense.yaml'
+    422:
+      description: Validation Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "The given data was invalid."
+              errors:
+                type: object

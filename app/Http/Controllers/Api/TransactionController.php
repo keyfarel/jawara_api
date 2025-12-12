@@ -43,7 +43,7 @@ class TransactionController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'List Data Pemasukan Lain',
+            'message' => 'List Data Pengeluaran Lain',
             'data'    => $expense
         ], 200);
     }
@@ -135,6 +135,53 @@ class TransactionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Pemasukan berhasil ditambahkan',
+            'data'    => $transaction
+        ], 201);
+    }
+
+    /**
+     * 3. POST: Tambah Pengeluaran Baru
+     */
+    public function storeExpense(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'title'                   => 'required|string|max:255',
+            'transaction_date'        => 'required|date',
+            'transaction_category_id' => 'required|exists:transaction_categories,id',
+            'amount'                  => 'required|numeric|min:0',
+            'description'             => 'nullable|string',
+            'proof_image'             => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi Gagal',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        // Upload Gambar
+        $imagePath = null;
+        if ($request->hasFile('proof_image')) {
+            $imagePath = $request->file('proof_image')->store('proofs', 'public');
+        }
+
+        $transaction = Transaction::create([
+            'user_id'                 => auth()->id(),
+            'transaction_category_id' => $request->transaction_category_id,
+            'billing_id'              => null,
+            'title'                   => $request->title,
+            'type'                    => 'expense',
+            'amount'                  => $request->amount,
+            'transaction_date'        => $request->transaction_date,
+            'description'             => $request->description,
+            'proof_image'             => $imagePath,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pengeluaran berhasil ditambahkan',
             'data'    => $transaction
         ], 201);
     }

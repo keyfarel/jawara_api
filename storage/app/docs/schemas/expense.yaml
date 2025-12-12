@@ -1,0 +1,66 @@
+Expense:
+  type: object
+  properties:
+    id:
+      type: integer
+      format: int64
+      example: 7
+    user_id:
+      type: integer
+      format: int64
+      example: 1
+    transaction_category_id:
+      type: integer
+      format: int64
+      example: 1
+    billing_id:
+      type: integer
+      format: int64
+      nullable: true
+      example: null
+    title:
+      type: string
+      example: "Beli IOT KIT"
+    type:
+      type: string
+      enum: ["expense"]
+      example: "expense"
+    amount:
+      type: string
+      description: Disimpan sebagai string untuk presisi desimal
+      example: "250000"
+    transaction_date:
+      type: string
+      format: date
+      example: "2025-10-10"
+    description:
+      type: string
+      nullable: true
+      example: null
+    proof_image_link:
+      type: string
+      format: uri
+      nullable: true
+      description: URL lengkap menuju gambar bukti transaksi
+      example: "http://127.0.0.1:8000/storage/proofs/CvpgTfhezVc9V84t6zpUuTVEbFdvxdHoeiLixzHb.png"
+    created_at:
+      type: string
+      format: date-time
+      example: "2025-12-10T14:43:19.000000Z"
+    updated_at:
+      type: string
+      format: date-time
+      example: "2025-12-10T14:43:19.000000Z"
+    category:
+      type: object
+      nullable: true
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Perlengkapan Proyek"
+        type:
+          type: string
+          example: "expense"

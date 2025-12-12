@@ -106,6 +106,7 @@ Route::middleware('jwt.auth')->group(function () {
     Route::get('/other-incomes', [TransactionController::class, 'indexIncome']); 
     Route::get('/other-expenses', [TransactionController::class, 'indexExpense']);      
     Route::post('/other-incomes', [TransactionController::class, 'storeIncome']);
+    Route::post('/other-expenses', [TransactionController::class, 'storeExpense']);
     Route::get('/other-incomes/{id}', [TransactionController::class, 'showIncome']);
     Route::put('/other-incomes/{id}', [TransactionController::class, 'updateIncome']);
     Route::delete('/other-incomes/{id}', [TransactionController::class, 'destroyIncome']);

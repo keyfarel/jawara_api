@@ -1,60 +1,59 @@
-Billing:
-  type: object
-  properties:
-    id:
-      type: integer
-      example: 4
-    family_id:
-      type: integer
-      example: 1
-    dues_type_id:
-      type: integer
-      example: 3
-    billing_code:
-      type: string
-      example: "INV-1765085935-13G9"
-    period:
-      type: string
-      example: "Desember 2025"
-    amount:
-      type: string
-      example: "100000.00"
-    status:
-      type: string
-      enum: ["paid", "unpaid"]
-      example: "unpaid"
-    created_at:
-      type: string
-      format: date-time
-    updated_at:
-      type: string
-      format: date-time
-    family:
-      type: object
-      nullable: true
-      properties:
-        id:
-          type: integer
-          example: 1
-        kk_number:
-          type: string
-          example: "3201012345670001"
-        ownership_status:
-          type: string
-          example: "owner"
-        status:
-          type: string
-          example: "active"
-    dues_type:
-      type: object
-      nullable: true
-      properties:
-        id:
-          type: integer
-          example: 3
-        name:
-          type: string
-          example: "Dana Sosial"
-        amount:
-          type: string
-          example: "10000.00"
+type: object
+properties:
+  id:
+    type: integer
+    example: 4
+  family_id:
+    type: integer
+    example: 1
+  dues_type_id:
+    type: integer
+    example: 3
+  billing_code:
+    type: string
+    example: "INV-1765085935-13G9"
+  period:
+    type: string
+    example: "Desember 2025"
+  amount:
+    type: string
+    example: "100000.00"
+  status:
+    type: string
+    enum: ["paid", "unpaid"]
+    example: "unpaid"
+  created_at:
+    type: string
+    format: date-time
+  updated_at:
+    type: string
+    format: date-time
+  family:
+    type: object
+    nullable: true
+    properties:
+      id:
+        type: integer
+        example: 1
+      kk_number:
+        type: string
+        example: "3201012345670001"
+      ownership_status:
+        type: string
+        example: "owner"
+      status:
+        type: string
+        example: "active"
+  dues_type:
+    type: object
+    nullable: true
+    properties:
+      id:
+        type: integer
+        example: 3
+      name:
+        type: string
+        example: "Dana Sosial"
+      amount:
+        type: string
+        example: "10000.00"

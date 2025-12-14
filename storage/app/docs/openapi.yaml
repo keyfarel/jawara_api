@@ -55,7 +55,7 @@ paths:
   /api/finance/report:
     $ref: "./paths/finance/report.yaml"
 
-  #Billings
+  # Billings
   /api/billings:
     $ref: "./paths/billings/collection.yaml"
 
@@ -92,6 +92,10 @@ paths:
     $ref: "./paths/houses/options.yaml"
   /api/families/options:
     $ref: "./paths/families/options.yaml"
+
+  # Dues Types
+  /api/dues-types:
+    $ref: "./paths/dues_types/collection.yaml"
 
 components:
   securitySchemes:
@@ -143,3 +147,5 @@ components:
       $ref: "./schemas/dashboard_population.yaml"
     Billing:
       $ref: "./schemas/billings.yaml"
+    DuesType:
+      $ref: "./schemas/dues_type.yaml"

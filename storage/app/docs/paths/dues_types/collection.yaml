@@ -1,0 +1,35 @@
+get:
+  tags:
+    - Dues Types
+  summary: Get List Kategori Iuran
+  description: Mengambil daftar semua jenis iuran yang tersedia.
+  security:
+    - BearerToken: []
+  responses:
+    '200':
+      description: Berhasil mengambil data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: "List Data Kategori Iuran"
+              data:
+                type: array
+                items:
+                  $ref: "../../schemas/dues_type.yaml"
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Unauthenticated."

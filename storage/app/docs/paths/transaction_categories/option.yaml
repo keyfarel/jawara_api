@@ -1,0 +1,23 @@
+get:
+  tags:
+    - Transaction Categories
+  summary: Get Transaction Category Options
+  description: Mengambil daftar kategori transaksi untuk kebutuhan dropdown / select input.
+  operationId: getTransactionCategoryOptions
+  security:
+    - BearerToken: []
+  responses:
+    200:
+      description: Successful operation
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              data:
+                type: array
+                items:
+                  $ref: '../../schemas/transaction_category_option.yaml'

@@ -2,7 +2,7 @@ get:
   tags:
     - Transaction Categories
   summary: Get Transaction Category Options
-  description: Mengambil daftar kategori transaksi untuk kebutuhan dropdown / select input.
+  description: Mengambil daftar kategori transaksi (id, name, type) untuk kebutuhan dropdown / select input.
   operationId: getTransactionCategoryOptions
   security:
     - BearerToken: []

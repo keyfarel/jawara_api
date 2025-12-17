@@ -5,8 +5,14 @@ post:
   description: |
     Mendaftarkan user baru, membuat data Citizen, Family (KK), dan House.
 
+    Aturan Dokumen:
+    - `id_card_photo` bersifat OPSIONAL
+    - Jika `selfie_photo` diupload, maka `id_card_photo` WAJIB
+    - Jika hanya `id_card_photo` tanpa `selfie_photo`, registrasi tetap berhasil tanpa face verification
+
     Fitur Tambahan:
-    - **Face Verification**: Jika `selfie_photo` diupload, sistem akan membandingkan wajah di selfie dengan wajah di KTP secara otomatis.
+    - **Face Verification**: Jika `selfie_photo` diupload, sistem akan membandingkan wajah di selfie dengan wajah di KTP.
+
   requestBody:
     required: true
     content:
@@ -21,7 +27,6 @@ post:
             - password_confirmation
             - nik
             - gender
-            - id_card_photo
             - ownership_status
             - family_role
           properties:
@@ -59,7 +64,10 @@ post:
             id_card_photo:
               type: string
               format: binary
-              description: "Foto KTP Wajib (jpg/png, max 5MB)"
+              nullable: true
+              description: |
+                [OPSIONAL] Foto KTP (jpg/png, max 5MB).
+                Wajib jika ingin menggunakan fitur verifikasi wajah.
 
             selfie_photo:
               type: string

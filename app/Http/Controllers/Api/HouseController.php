@@ -50,4 +50,13 @@ class HouseController extends Controller
             'data'    => $house
         ], 201);
     }
+
+    public function options()
+    {
+        $houses = House::select('id', 'house_name')
+            ->orderBy('house_name')
+            ->get();
+
+        return response()->json($houses);
+    }
 }

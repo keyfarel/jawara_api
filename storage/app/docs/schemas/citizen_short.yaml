@@ -11,34 +11,56 @@ properties:
     example: 10
   nik:
     type: string
-    example: "1234567890123456"
+    example: "3501234567890001"
   name:
     type: string
-    example: John Doe
+    example: "John Doe"
   phone:
     type: string
     nullable: true
+    example: "08123456789"
   birth_place:
     type: string
-    example: Malang
+    example: "Malang"
   birth_date:
     type: string
     format: date
-    example: 1998-05-01
+    example: "1998-05-01"
   gender:
     type: string
-    example: male
+    enum: [male, female]
+    example: "male"
+  religion:
+    type: string
+    nullable: true
+    example: "Islam"
+  blood_type:
+    type: string
+    nullable: true
+    example: "O"
+  education:
+    type: string
+    nullable: true
+    example: "S1"
+  occupation:
+    type: string
+    nullable: true
+    example: "Wiraswasta"
   family_role:
     type: string
-    example: husband
+    example: "husband"
+  id_card_photo:
+    type: string
+    nullable: true
+    example: "uploads/citizens/ktp_123.jpg"
   status:
     type: string
-    example: active
+    example: "active"
   created_at:
     type: string
     format: date-time
-    example: 2025-03-01T10:23:45.000000Z
+    example: "2025-03-01T10:23:45.000000Z"
   updated_at:
     type: string
     format: date-time
-    example: 2025-03-01T10:23:45.000000Z
+    example: "2025-03-01T10:23:45.000000Z"

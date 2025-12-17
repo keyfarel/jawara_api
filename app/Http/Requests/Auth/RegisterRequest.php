@@ -23,7 +23,7 @@ class RegisterRequest extends FormRequest
             'full_name'     => 'required|string|max:255',
             'nik'           => 'required|string|size:16|unique:citizens,nik',
             'gender'        => 'required|in:male,female',
-            'id_card_photo' => 'required|image|max:5120', // Max 5MB biar aman
+            'id_card_photo' => 'nullable|image|max:5120|required_with:selfie_photo',
             'selfie_photo'  => 'nullable|image|max:5120',
 
             // Field ini TIDAK dikirim Flutter saat register, jadi buat nullable
@@ -42,6 +42,14 @@ class RegisterRequest extends FormRequest
             // User bisa pilih ID rumah yg ada, ATAU isi alamat manual
             'house_id'      => 'nullable|exists:houses,id',
             'custom_house_address' => 'required_without:house_id|string|nullable',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'id_card_photo.required_with' =>
+                'Foto KTP wajib diupload jika menggunakan foto selfie.',
         ];
     }
 }

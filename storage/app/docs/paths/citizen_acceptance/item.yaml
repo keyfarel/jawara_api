@@ -1,0 +1,107 @@
+get:
+  tags:
+    - Citizen Acceptance
+  summary: Detail Warga Verifikasi
+  description: Melihat detail data warga spesifik untuk diperiksa admin.
+  security:
+    - BearerToken: []
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+      description: ID Citizen
+  responses:
+    200:
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: "../../schemas/citizen_acceptance.yaml"
+    404:
+      description: Not Found
+
+put:
+  tags:
+    - Citizen Acceptance
+  summary: Verifikasi Warga (Terima / Tolak)
+  description: |
+    Mengubah status registrasi user.
+    - **verified**: User bisa login, status citizen jadi permanent/active.
+    - **rejected**: User ditolak, status citizen jadi inactive.
+  security:
+    - BearerToken: []
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+          properties:
+            status:
+              type: string
+              enum: [verified, rejected, pending]
+              example: verified
+  responses:
+    200:
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: Status verifikasi berhasil diperbarui menjadi verified
+              data:
+                $ref: "../../schemas/citizen_acceptance.yaml"
+    422:
+      description: Validation Error
+
+delete:
+  tags:
+    - Citizen Acceptance
+  summary: Hapus Pengajuan
+  description: Menghapus data warga dan user terkait secara permanen (Hard Delete).
+  security:
+    - BearerToken: []
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+  responses:
+    200:
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: Data pengajuan warga berhasil dihapus permanen
+    404:
+      description: Not Found

@@ -113,4 +113,14 @@ class UserController extends Controller
             'message' => 'User deleted successfully'
         ]);
     }
+
+    public function options(): JsonResponse
+    {
+        $users = User::doesntHave('citizen')
+            ->select('id', 'name')
+            ->orderBy('name', 'asc')
+            ->get();
+
+        return response()->json($users);
+    }
 }

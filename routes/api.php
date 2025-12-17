@@ -21,7 +21,7 @@ use App\Http\Controllers\Api\{
 
 /* Auth (public) */
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/auth/login-face', [AuthController::class, 'loginFace']);
+Route::post('/login-face', [AuthController::class, 'loginFace']);
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/refresh-token', [AuthController::class, 'refreshToken']);
 
@@ -52,6 +52,7 @@ Route::middleware('jwt.auth')->group(function () {
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{id}', [UserController::class, 'update']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    Route::get('/users/options', [UserController::class, 'options']);
 
     /* Mutations */
     Route::get('/mutations', [MutationController::class, 'index']);
@@ -63,6 +64,9 @@ Route::middleware('jwt.auth')->group(function () {
 
     /* Citizen Verification */
     Route::get('/citizens/verification-list', [CitizenAcceptanceController::class, 'index']);
+    Route::get('/citizens/verification-list/{id}', [CitizenAcceptanceController::class, 'show']);
+    Route::put('/citizens/verification-list/{id}', [CitizenAcceptanceController::class, 'update']); // Untuk Accept/Reject
+    Route::delete('/citizens/verification-list/{id}', [CitizenAcceptanceController::class, 'destroy']);
 
     /* Finance Report */
     Route::get('/finance/report', [TransactionController::class, 'report']);
@@ -103,8 +107,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::delete('/billings/{id}', [BillingController::class, 'destroy']);
 
     /* Other Income */
-    Route::get('/other-incomes', [TransactionController::class, 'indexIncome']); 
-    Route::get('/other-expenses', [TransactionController::class, 'indexExpense']);      
+    Route::get('/other-incomes', [TransactionController::class, 'indexIncome']);
+    Route::get('/other-expenses', [TransactionController::class, 'indexExpense']);
     Route::post('/other-incomes', [TransactionController::class, 'storeIncome']);
     Route::post('/other-expenses', [TransactionController::class, 'storeExpense']);
     Route::get('/other-incomes/{id}', [TransactionController::class, 'showIncome']);

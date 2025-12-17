@@ -1,0 +1,35 @@
+get:
+  tags:
+    - Citizen Acceptance
+  summary: List Warga Perlu Verifikasi
+  description: Mengambil daftar warga yang mengajukan registrasi (biasanya filter status=pending).
+  security:
+    - BearerToken: []
+  parameters:
+    - in: query
+      name: status
+      schema:
+        type: string
+        enum: [pending, verified, rejected]
+        default: pending
+      description: Filter berdasarkan status registrasi user.
+  responses:
+    200:
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: List data warga berhasil diambil
+              data:
+                type: array
+                items:
+                  $ref: "../../schemas/citizen_acceptance.yaml"
+    401:
+      $ref: "../../responses/Auth/unauthorized.yaml"

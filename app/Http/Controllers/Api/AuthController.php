@@ -101,12 +101,12 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            // 4. Cari User di Database berdasarkan Filename
-            // Python mengembalikan path file yang cocok, kita cari di tabel citizens
             $matchedFilename = $result['match_filename'];
+            // Python code Anda mengembalikan clean filename: "foto.jpg"
 
-            // Tips: Pastikan format path di DB dan di Python konsisten (misal: "biometrics/foto.jpg")
-            $citizen = Citizen::where('verified_selfie_photo', $matchedFilename)->first();
+            // Karena di database kita simpan "biometrics/foto.jpg", kita harus sesuaikan pencariannya
+            // OPSI 1: Cari pakai LIKE (Paling aman)
+            $citizen = Citizen::where('verified_selfie_photo', 'LIKE', '%' . $matchedFilename)->first();
 
             if (!$citizen || !$citizen->user) {
                 return response()->json([
@@ -168,73 +168,105 @@ class AuthController extends Controller
         return DB::transaction(function () use ($request) {
             $validated = $request->validated();
 
-            // --- 0. CEK VERIFIKASI WAJAH (Jika ada selfie) ---
             $selfiePath = null;
+            $ktpPath = null;
 
-            if ($request->hasFile('selfie_photo')) {
+            // Base URL Python
+            $pythonApiUrl = 'https://caliphal-dallas-wriggly.ngrok-free.dev';
+
+            // --- 1. PROSES FILE & VERIFIKASI WAJAH ---
+            if ($request->hasFile('selfie_photo') && $request->hasFile('id_card_photo')) {
                 $ktpFile = $request->file('id_card_photo');
                 $selfieFile = $request->file('selfie_photo');
 
-                // URL Ngrok Python dari Colab (Ganti setiap kali run Colab)
-                $pythonApiUrl = 'https://caliphal-dallas-wriggly.ngrok-free.dev/verify';
-
+                // ============================================================
+                // A.0 CEK DUPLIKASI WAJAH (Mencegah Double Account) [BARU]
+                // ============================================================
                 try {
-                    $response = Http::withoutVerifying()
-                        ->timeout(60)
-                        ->attach(
-                            'ktp', file_get_contents($ktpFile), $ktpFile->getClientOriginalName()
-                        )->attach(
-                            'selfie', file_get_contents($selfieFile), $selfieFile->getClientOriginalName()
-                        )->post($pythonApiUrl);
+                    // Kita gunakan endpoint /find-face yang biasa dipakai login
+                    $duplicateCheck = Http::withoutVerifying()
+                        ->timeout(30)
+                        ->attach('selfie', file_get_contents($selfieFile), $selfieFile->getClientOriginalName())
+                        ->post($pythonApiUrl . '/find-face');
 
-                    $result = $response->json();
+                    $duplicateResult = $duplicateCheck->json();
 
-                    // 1. Cek Error Logika (Wajah Tidak Cocok)
-                    // Ini bukan error koneksi, tapi error validasi dari Python
-                    if ($response->failed() || ($result['status'] ?? 'error') === 'error') {
+                    // LOGIKA: Jika STATUS = FOUND, artinya wajah SUDAH ADA -> Error!
+                    if (($duplicateResult['status'] ?? 'error') === 'found') {
+
+                        // (Opsional) Cek siapa pemilik wajah ini di database Laravel
+                        $matchedFilename = $duplicateResult['match_filename'];
+                        $existingUser = Citizen::where('verified_selfie_photo', 'LIKE', '%' . $matchedFilename)->first();
+                        $msg = $existingUser
+                            ? "Wajah ini sudah terdaftar di sistem. Silakan login."
+                            : "Wajah ini sudah terdaftar di sistem.";
+
                         throw ValidationException::withMessages([
-                            'selfie_photo' => [$result['message'] ?? 'Wajah tidak cocok.'],
+                            'selfie_photo' => [$msg],
                         ]);
                     }
 
-                    if ($selfiePath) {
-                        try {
-                            // $selfiePath contoh: "biometrics/abc12345.jpg"
-                            // Kita kirim file fisiknya ke endpoint /add-face
+                } catch (ValidationException $e) {
+                    throw $e; // Lempar error validasi ke user
+                } catch (\Exception $e) {
+                    // Jika server Python mati/timeout saat cek duplikat,
+                    // Anda bisa memilih: Lanjut (Warning) atau Blokir (Strict).
+                    // Disini saya pilih Log Warning agar registrasi tidak macet total kalau AI down.
+                    \Log::warning("Gagal cek duplikasi wajah: " . $e->getMessage());
+                }
 
-                            // URL Python (Pastikan variabel ini sama dengan yang di atas)
-                            $pythonApiUrl = 'https://caliphal-dallas-wriggly.ngrok-free.dev';
+                // ============================================================
+                // A.1 Verifikasi Biometrik (KTP vs Selfie) [EXISTING]
+                // ============================================================
+                try {
+                    $response = Http::withoutVerifying()
+                        ->timeout(60)
+                        ->attach('ktp', file_get_contents($ktpFile), $ktpFile->getClientOriginalName())
+                        ->attach('selfie', file_get_contents($selfieFile), $selfieFile->getClientOriginalName())
+                        ->post($pythonApiUrl . '/verify');
 
-                            Http::withoutVerifying()
-                                ->timeout(30)
-                                ->attach(
-                                    'file', // Key sesuai parameter di Python: add_face(file: UploadFile)
-                                    file_get_contents(storage_path('app/public/'.$selfiePath)),
-                                    basename($selfiePath) // Kirim nama file asli "abc12345.jpg"
-                                )
-                                ->post($pythonApiUrl . '/add-face');
+                    $result = $response->json();
 
-                        } catch (\Exception $e) {
-                            // Silent fail: Jangan batalkan register cuma karena gagal sync
-                            // Log error agar kita tahu
-                            Log::error("Gagal sync foto ke Colab: " . $e->getMessage());
-                        }
+                    if ($response->failed() || ($result['status'] ?? 'error') === 'error') {
+                        throw ValidationException::withMessages([
+                            'selfie_photo' => [$result['message'] ?? 'Wajah tidak cocok dengan KTP.'],
+                        ]);
+                    }
+
+                    // B. Simpan File ke Storage Laravel
+                    $selfiePath = $selfieFile->store('biometrics', 'public');
+                    $ktpPath = $ktpFile->store('id_cards', 'public');
+
+                    // C. Sinkronisasi ke Python (Add Face)
+                    try {
+                        $storagePath = storage_path('app/public/' . $selfiePath);
+                        $filenameOnly = basename($selfiePath);
+
+                        Http::withoutVerifying()
+                            ->timeout(30)
+                            ->attach('file', file_get_contents($storagePath), $filenameOnly)
+                            ->post($pythonApiUrl . '/add-face');
+
+                    } catch (\Exception $e) {
+                        \Log::error("Gagal Sync Wajah ke Python: " . $e->getMessage());
                     }
 
                 } catch (ValidationException $e) {
                     throw $e;
-
-                } catch (Exception $e) {
-
-                    Log::error("Face Verification System Error: " . $e->getMessage()); // Log buat admin
-
+                } catch (\Exception $e) {
+                    \Log::error("Face Verification System Error: " . $e->getMessage());
                     throw ValidationException::withMessages([
-                        'selfie_photo' => ['Gagal menghubungi server verifikasi wajah. Cek koneksi atau coba lagi.'],
+                        'selfie_photo' => ['Sistem verifikasi wajah sedang gangguan.'],
                     ]);
+                }
+            } else {
+                // Fallback jika tidak wajib upload foto (tergantung aturan bisnis Anda)
+                if ($request->hasFile('id_card_photo')) {
+                    $ktpPath = $request->file('id_card_photo')->store('id_cards', 'public');
                 }
             }
 
-            // 1. Create User Account (SAMA)
+            // --- 2. Create User Account ---
             $user = User::create([
                 'name'     => $validated['full_name'],
                 'email'    => $validated['email'],
@@ -244,37 +276,48 @@ class AuthController extends Controller
                 'registration_status' => 'pending',
             ]);
 
-            // 2. Handle Housing (SAMA)
-            $houseId = $validated['house_id'] ?? null;
+            // --- 3. Handle Housing ---
+            $houseId = $request->house_id;
 
-            if (!$houseId && !empty($validated['custom_house_address'])) {
+            // JIKA MEMBUAT RUMAH BARU
+            if (!$houseId) {
+                // Ambil data dari request baru
+                $block = $request->house_block;
+                $number = $request->house_number;
+                $street = $request->house_street;
+
+                // Generate Nama Rumah: "Blok A No. 12"
+                $generatedHouseName = "Blok " . $block . " No. " . $number;
+
+                // Cek Duplikasi (Opsional: Agar tidak ada rumah ganda)
+                // $exist = House::where('house_name', $generatedHouseName)->first();
+                // if($exist) ... throw error ...
+
                 $house = House::create([
-                    'house_name' => 'Rumah ' . $validated['full_name'],
-                    'owner_name' => $validated['full_name'],
-                    'address'    => $validated['custom_house_address'],
+                    'house_name' => $generatedHouseName,
+                    'owner_name' => $request->full_name, // Pemilik sesuai pendaftar
+
+                    // Simpan detail alamat jalan di kolom address
+                    // Atau mau digabung? Terserah kebutuhan.
+                    // Disini saya simpan jalannya saja, karena blok/no sudah ada di house_name
+                    'address'    => $street,
+
                     'status'     => 'occupied',
                     'house_type' => 'Unofficial',
                 ]);
+
                 $houseId = $house->id;
             }
 
-            // 3. Handle Family (KK) - UPDATE DISINI
-            // HAPUS logic: $tempKK = 'TMP-' . time() ...
-
+            // --- 4. Handle Family ---
             $family = Family::create([
                 'house_id'         => $houseId,
-                // Ambil dari request jika ada, jika tidak ada set NULL
                 'kk_number'        => $validated['kk_number'] ?? null,
                 'ownership_status' => $validated['ownership_status'] ?? 'owner',
                 'status'           => 'active'
             ]);
 
-            // 4. Handle Citizen (Warga) (SAMA)
-            $ktpPath = null;
-            if ($request->hasFile('id_card_photo')) {
-                $ktpPath = $request->file('id_card_photo')->store('id_cards', 'public');
-            }
-
+            // --- 5. Handle Citizen ---
             Citizen::create([
                 'user_id'       => $user->id,
                 'family_id'     => $family->id,
@@ -282,16 +325,19 @@ class AuthController extends Controller
                 'name'          => $validated['full_name'],
                 'phone'         => $validated['phone'],
                 'gender'        => $validated['gender'],
+                'birth_place' => $request->birth_place,
+                'birth_date'  => $request->birth_date,
+                'religion'    => $request->religion,
+                'blood_type'  => $request->blood_type,
+                'education'     => $request->education,  // <--- Tambahkan ini
+                'occupation'    => $request->occupation,
                 'id_card_photo' => $ktpPath,
-                'verified_selfie_photo' => $selfiePath, // <--- Simpan Path Selfie Disini
+                'verified_selfie_photo' => $selfiePath,
                 'family_role'   => 'Kepala Keluarga',
-                'birth_place'   => null,
-                'birth_date'    => null,
-                'religion'      => null,
-                'blood_type'    => null,
                 'status'        => 'permanent'
             ]);
-            // 5. Generate Token (SAMA)
+
+            // --- 6. Token Response ---
             $accessToken  = JWTAuth::fromUser($user);
             $refreshToken = Str::uuid()->toString();
 
@@ -306,7 +352,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'status'  => 'success',
-                'message' => 'Register successful' . ($selfiePath ? ' with face verification.' : '.'),
+                'message' => 'Register berhasil.',
                 'data'    => [
                     'access_token'  => $accessToken,
                     'refresh_token' => $refreshToken,

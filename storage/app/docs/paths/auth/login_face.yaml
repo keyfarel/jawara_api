@@ -1,0 +1,111 @@
+post:
+  tags:
+    - Authentication
+  summary: Login with Face Recognition
+  description: |
+    Melakukan login menggunakan data biometrik wajah.
+    Endpoint ini akan mengirim foto ke service AI (Python) untuk pencarian 1:N.
+    Jika wajah ditemukan dan cocok dengan data citizen, sistem akan mengembalikan token akses.
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          required:
+            - selfie_photo
+          properties:
+            selfie_photo:
+              type: string
+              format: binary
+              description: File gambar wajah (JPG/PNG). Max 10MB.
+  responses:
+    200:
+      description: Login successful
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: success
+              message:
+                type: string
+                example: Login berhasil via Wajah
+              data:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIs...
+                  refresh_token:
+                    type: string
+                    example: "uuid-token-string..."
+                  token_type:
+                    type: string
+                    example: bearer
+                  expires_in:
+                    type: integer
+                    example: 3600
+                  user:
+                    $ref: "../../schemas/user_full.yaml"
+
+    401:
+      description: Face Not Recognized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: Wajah tidak dikenali atau belum terdaftar.
+
+    403:
+      description: Account Rejected/Inactive
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: Akun Anda telah dinonaktifkan.
+
+    404:
+      description: User Data Not Found (Orphaned Photo)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: Data user tidak ditemukan.
+
+    422:
+      $ref: "../../responses/Auth/validation.yaml"
+
+    500:
+      description: AI Service Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: Layanan verifikasi wajah sedang sibuk. Silakan gunakan password.

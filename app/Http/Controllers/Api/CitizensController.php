@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Citizen;
+use App\Models\Family;
+use App\Models\House;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -30,31 +32,41 @@ class CitizensController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): jsonResponse
+    public function store(Request $request): JsonResponse
     {
+        // 1. Validasi Input
         $validated = $request->validate([
-            'family_id' => 'required|exists:families,id',
-            'user_id' => 'required|exists:users,id',
-            'nik' => 'required|string|unique:citizens,nik',
-            'name' => 'required|string',
-            'phone' => 'nullable|string',
-            'birth_place' => 'required|string',
-            'birth_date' => 'required|date',
-            'gender' => 'required|string',
-            'religion' => 'nullable|string',
-            'blood_type' => 'nullable|string',
+            'family_id'     => 'required|exists:families,id',
+            'user_id'       => 'nullable|exists:users,id',
+            'nik'           => 'required|string|unique:citizens,nik',
+            'name'          => 'required|string',
+            'phone'         => 'nullable|string',
+            'birth_place'   => 'required|string',
+            'birth_date'    => 'required|date',
+            'gender'        => 'required|string', // male, female
+            'religion'      => 'nullable|string',
+            'blood_type'    => 'nullable|string',
             'id_card_photo' => 'nullable|string',
-            'family_role' => 'required|string',
-            'education' => 'nullable|string',
-            'occupation' => 'nullable|string',
-            'status' => 'nullable|string'
+            'family_role'   => 'required|string', // husband, wife, etc
+            'education'     => 'nullable|string',
+            'occupation'    => 'nullable|string',
+            'status'        => 'nullable|string'
         ]);
 
+        // 2. Set Default Value (Logika Tambahan)
+        // Jika null, isi dengan 'Lainnya'
+        $validated['education']  = $validated['education'] ?? 'Lainnya';
+        $validated['occupation'] = $validated['occupation'] ?? 'Lainnya';
+
+        // Default status jika null
+        $validated['status']     = $validated['status'] ?? 'active';
+
+        // 3. Simpan ke Database
         $citizen = Citizen::create($validated);
 
         return response()->json([
             'status'  => 'success',
-            'message' => 'citizen added successfully',
+            'message' => 'Citizen added successfully',
             'data'    => $citizen
         ], 201);
     }

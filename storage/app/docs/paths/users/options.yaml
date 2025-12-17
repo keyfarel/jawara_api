@@ -1,0 +1,28 @@
+get:
+  tags:
+    - Users
+  summary: Get User Options for Dropdown
+  description: |
+    Mengambil daftar user yang belum terhubung dengan data warga (Citizen).
+    Digunakan untuk dropdown "Tautkan Akun" pada form Tambah Warga.
+  security:
+    - BearerToken: []
+  responses:
+    200:
+      description: Success
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 10
+                name:
+                  type: string
+                  example: "Budi Santoso"
+
+    401:
+      $ref: "../../responses/Auth/unauthorized.yaml"

@@ -97,6 +97,10 @@ paths:
   /api/dues-types:
     $ref: "./paths/dues_types/collection.yaml"
 
+  # Transaction Categories
+  /api/transaction-categories:
+    $ref: "./paths/transaction_categories/option.yaml"
+
 components:
   securitySchemes:
     BearerToken:
@@ -149,3 +153,5 @@ components:
       $ref: "./schemas/billings.yaml"
     DuesType:
       $ref: "./schemas/dues_type.yaml"
+    TransactionCategoryOption:
+      $ref: "./schemas/transaction_category_option.yaml"

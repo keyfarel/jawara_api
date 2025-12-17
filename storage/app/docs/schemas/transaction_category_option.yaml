@@ -6,3 +6,9 @@ properties:
   name:
     type: string
     example: "Iuran Warga"
+  type:
+    type: string
+    enum:
+      - income
+      - expense
+    example: income

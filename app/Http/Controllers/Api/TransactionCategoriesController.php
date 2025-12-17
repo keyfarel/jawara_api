@@ -11,7 +11,7 @@ class TransactionCategoriesController extends Controller
 {
     public function option(): JsonResponse
     {
-        $categories = TransactionCategory::all(['id', 'name']);
+        $categories = TransactionCategory::all(['id', 'name', 'type']);
         
         return response()->json([
             'status' => 'success',

@@ -16,7 +16,8 @@ use App\Http\Controllers\Api\{
     MutationController,
     FamilyController,
     CitizensController,
-    DashboardController
+    DashboardController,
+    TransactionCategoriesController
 };
 
 /* Auth (public) */
@@ -110,6 +111,9 @@ Route::middleware('jwt.auth')->group(function () {
     Route::get('/other-incomes/{id}', [TransactionController::class, 'showIncome']);
     Route::put('/other-incomes/{id}', [TransactionController::class, 'updateIncome']);
     Route::delete('/other-incomes/{id}', [TransactionController::class, 'destroyIncome']);
+
+    // Transaction Categories
+    Route::get('/transaction-categories', [TransactionCategoriesController::class, 'option']);
 });
 
 /* 404 */

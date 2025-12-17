@@ -277,15 +277,35 @@ class AuthController extends Controller
             ]);
 
             // --- 3. Handle Housing ---
-            $houseId = $validated['house_id'] ?? null;
-            if (!$houseId && !empty($validated['custom_house_address'])) {
+            $houseId = $request->house_id;
+
+            // JIKA MEMBUAT RUMAH BARU
+            if (!$houseId) {
+                // Ambil data dari request baru
+                $block = $request->house_block;
+                $number = $request->house_number;
+                $street = $request->house_street;
+
+                // Generate Nama Rumah: "Blok A No. 12"
+                $generatedHouseName = "Blok " . $block . " No. " . $number;
+
+                // Cek Duplikasi (Opsional: Agar tidak ada rumah ganda)
+                // $exist = House::where('house_name', $generatedHouseName)->first();
+                // if($exist) ... throw error ...
+
                 $house = House::create([
-                    'house_name' => 'Rumah ' . $validated['full_name'],
-                    'owner_name' => $validated['full_name'],
-                    'address'    => $validated['custom_house_address'],
+                    'house_name' => $generatedHouseName,
+                    'owner_name' => $request->full_name, // Pemilik sesuai pendaftar
+
+                    // Simpan detail alamat jalan di kolom address
+                    // Atau mau digabung? Terserah kebutuhan.
+                    // Disini saya simpan jalannya saja, karena blok/no sudah ada di house_name
+                    'address'    => $street,
+
                     'status'     => 'occupied',
                     'house_type' => 'Unofficial',
                 ]);
+
                 $houseId = $house->id;
             }
 
@@ -305,6 +325,12 @@ class AuthController extends Controller
                 'name'          => $validated['full_name'],
                 'phone'         => $validated['phone'],
                 'gender'        => $validated['gender'],
+                'birth_place' => $request->birth_place,
+                'birth_date'  => $request->birth_date,
+                'religion'    => $request->religion,
+                'blood_type'  => $request->blood_type,
+                'education'     => $request->education,  // <--- Tambahkan ini
+                'occupation'    => $request->occupation,
                 'id_card_photo' => $ktpPath,
                 'verified_selfie_photo' => $selfiePath,
                 'family_role'   => 'Kepala Keluarga',

@@ -25,6 +25,8 @@ class RegisterRequest extends FormRequest
             'gender'        => 'required|in:male,female',
             'id_card_photo' => 'nullable|image|max:5120|required_with:selfie_photo',
             'selfie_photo'  => 'nullable|image|max:5120',
+            'education'     => 'nullable|string',
+            'occupation'    => 'nullable|string',
 
             // Field ini TIDAK dikirim Flutter saat register, jadi buat nullable
             'birth_place'   => 'nullable|string',
@@ -41,7 +43,9 @@ class RegisterRequest extends FormRequest
             // --- 4. Housing ---
             // User bisa pilih ID rumah yg ada, ATAU isi alamat manual
             'house_id'      => 'nullable|exists:houses,id',
-            'custom_house_address' => 'required_without:house_id|string|nullable',
+            'house_block'   => 'required_without:house_id|string|nullable',
+            'house_number'  => 'required_without:house_id|string|nullable',
+            'house_street'  => 'required_without:house_id|string|nullable',
         ];
     }
 

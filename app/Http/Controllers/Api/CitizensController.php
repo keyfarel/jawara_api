@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Citizen;
+use App\Models\Family;
+use App\Models\House;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
